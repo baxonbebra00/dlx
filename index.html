@@ -12,7 +12,7 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23e6b800'/><text x='16' y='22' text-anchor='middle' font-size='14' font-weight='900' fill='%231a0f04'>DLX</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Nunito+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-/* ===== DLX Ремонт — Основные стили ===== */
+
 
 :root {
     --c50:  #fdf8f0;
@@ -84,7 +84,7 @@ body::after {
 }
 
 
-/* ===== Анимации ===== */
+
 
 .rv {
     opacity: 0;
@@ -192,7 +192,7 @@ body::after {
 }
 
 
-/* ===== Герой ===== */
+
 
 .hero {
     position: relative;
@@ -1596,18 +1596,18 @@ function done() {
     document.getElementById('fC').style.display = 'none';
     document.getElementById('fOk').style.display = '';
 }
-/* ===== Навигация: тень шапки + подсветка секций ===== */
+
 
 (function () {
     var hdr = document.getElementById('hdr');
     var navLinks = document.querySelectorAll('.nav a');
 
-    /* Тень при скролле */
+
     window.addEventListener('scroll', function () {
         hdr.classList.toggle('sc', window.scrollY > 30);
     });
 
-    /* Контурная подсветка активной секции */
+  
     var secObs = new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {
             if (e.isIntersecting) {
@@ -1626,7 +1626,7 @@ function done() {
         secObs.observe(s);
     });
 })();
-/* ===== Анимации: появление при скролле ===== */
+/* ===== ибать мощно===== */
 
 (function () {
     var obs = new IntersectionObserver(function (entries) {
@@ -1649,3 +1649,4 @@ function done() {
 
 </body>
 </html>
+
