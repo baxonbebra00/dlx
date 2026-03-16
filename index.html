@@ -629,6 +629,145 @@ img { display: block; max-width: 100%; content-visibility: auto; }
 .theme-btn[data-t="2"] { background: linear-gradient(135deg, #faf6eb 50%, #8a7030 50%); }
 .theme-btn[data-t="3"] { background: linear-gradient(135deg, #231710 50%, #90be6d 50%); }
 .theme-btn[data-t="4"] { background: linear-gradient(135deg, #231710 50%, #81d8d0 50%); }
+.calc { background: var(--bg); }
+.calc-wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px;
+    border-radius: 24px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+}
+.calc-group { margin-bottom: 28px; }
+.calc-group:last-of-type { margin-bottom: 32px; }
+.calc-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 12px;
+}
+.calc-label span {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--heading);
+}
+.calc-label b {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 18px;
+    color: var(--accent);
+}
+.calc-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--bg3);
+    outline: none;
+    cursor: pointer;
+}
+.calc-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 3px solid var(--bg);
+    box-shadow: 0 2px 8px var(--accent-shadow);
+    cursor: pointer;
+    transition: transform .15s;
+}
+.calc-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+.calc-slider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 3px solid var(--bg);
+    box-shadow: 0 2px 8px var(--accent-shadow);
+    cursor: pointer;
+}
+.calc-types {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+.calc-type {
+    padding: 14px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text2);
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all .2s;
+    text-align: center;
+}
+.calc-type:hover { border-color: var(--border2); color: var(--heading); }
+.calc-type.on {
+    border-color: var(--accent);
+    background: var(--accent-bg2);
+    color: var(--accent);
+}
+.calc-extras {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.calc-extra {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text2);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all .2s;
+}
+.calc-extra:hover { border-color: var(--border2); }
+.calc-extra.on {
+    border-color: var(--accent);
+    background: var(--accent-bg2);
+    color: var(--accent);
+}
+.calc-result {
+    padding: 24px;
+    border-radius: 16px;
+    background: var(--accent-bg);
+    border: 1px solid var(--border2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+.calc-total-label {
+    font-size: 14px;
+    color: var(--text2);
+    margin-bottom: 4px;
+}
+.calc-total {
+    font-family: 'Unbounded', sans-serif;
+    font-size: clamp(24px, 4vw, 32px);
+    font-weight: 900;
+    color: var(--accent);
+}
+.calc-note {
+    color: var(--text3);
+    font-size: 12px;
+    text-align: center;
+    margin-top: 16px;
+}
+@media (max-width: 640px) {
+    .calc-wrap { padding: 24px 16px; }
+    .calc-types { grid-template-columns: 1fr; }
+    .calc-result { flex-direction: column; text-align: center; }
+}
 .ftr { border-top: 1px solid var(--border); padding: 22px 0; }
 .ftr-in { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
 .ftr span { color: var(--text3); font-size: 13px; }
@@ -692,6 +831,7 @@ body.menu-open { overflow: hidden; }
     <a href="#about" onclick="toggleMenu()">О компании</a>
     <a href="#services" onclick="toggleMenu()">Услуги</a>
     <a href="#portfolio" onclick="toggleMenu()">Проекты</a>
+    <a href="#calc" onclick="toggleMenu()">Калькулятор</a>
     <a href="#steps" onclick="toggleMenu()">Как работаем</a>
     <a href="#contacts" onclick="toggleMenu()">Контакты</a>
 </nav>
@@ -706,6 +846,7 @@ body.menu-open { overflow: hidden; }
                 <a href="#about">О нас</a>
                 <a href="#services">Услуги</a>
                 <a href="#portfolio">Проекты</a>
+                <a href="#calc">Калькулятор</a>
                 <a href="#steps">Этапы</a>
                 <a href="#contacts">Контакты</a>
             </nav>
@@ -769,6 +910,43 @@ body.menu-open { overflow: hidden; }
     <div class="sec-in">
         <div class="sec-h center rv"><h2>Наши <span>услуги</span></h2><p>Нажмите на услугу для подробностей</p></div>
         <div class="svc-list" id="svcList"></div>
+    </div>
+</section>
+<section id="calc" class="sec calc">
+    <div class="sec-in">
+        <div class="sec-h center rv"><h2>Калькулятор <span>стоимости</span></h2><p>Рассчитайте примерную стоимость ремонта</p></div>
+        <div class="calc-wrap rv">
+            <div class="calc-group">
+                <div class="calc-label"><span>Тип ремонта</span></div>
+                <div class="calc-types">
+                    <button class="calc-type" data-price="3500" onclick="setCalcType(this)">Косметический</button>
+                    <button class="calc-type on" data-price="6000" onclick="setCalcType(this)">Капитальный</button>
+                    <button class="calc-type" data-price="9500" onclick="setCalcType(this)">Под ключ</button>
+                </div>
+            </div>
+            <div class="calc-group">
+                <div class="calc-label"><span>Площадь</span><b id="calcArea">50 м²</b></div>
+                <input type="range" class="calc-slider" id="calcAreaSlider" min="10" max="200" value="50" step="5" oninput="updateCalc()">
+            </div>
+            <div class="calc-group">
+                <div class="calc-label"><span>Дополнительно</span></div>
+                <div class="calc-extras">
+                    <button class="calc-extra" data-add="1500" onclick="toggleExtra(this)">Дизайн-проект</button>
+                    <button class="calc-extra" data-add="800" onclick="toggleExtra(this)">Электрика</button>
+                    <button class="calc-extra" data-add="700" onclick="toggleExtra(this)">Сантехника</button>
+                    <button class="calc-extra" data-add="500" onclick="toggleExtra(this)">Тёплые полы</button>
+                    <button class="calc-extra" data-add="400" onclick="toggleExtra(this)">Кондиционер</button>
+                </div>
+            </div>
+            <div class="calc-result">
+                <div>
+                    <div class="calc-total-label">Примерная стоимость</div>
+                    <div class="calc-total" id="calcTotal">300 000 ₽</div>
+                </div>
+                <a href="#contacts" class="btn-main">Точный расчёт &#8594;</a>
+            </div>
+            <p class="calc-note">Окончательная стоимость определяется после бесплатного замера</p>
+        </div>
     </div>
 </section>
 <section id="portfolio" class="sec">
@@ -903,6 +1081,27 @@ var projects = [
             '<div class="port-card-body"><h4>' + p.t + '</h4><span>' + p.info + '</span><div class="port-card-tags">' + tags + '</div></div></div>';
     }).join('');
 })();
+function setCalcType(el) {
+    document.querySelectorAll('.calc-type').forEach(function(b) { b.classList.remove('on'); });
+    el.classList.add('on');
+    updateCalc();
+}
+function toggleExtra(el) {
+    el.classList.toggle('on');
+    updateCalc();
+}
+function updateCalc() {
+    var area = parseInt(document.getElementById('calcAreaSlider').value);
+    document.getElementById('calcArea').textContent = area + ' м\u00b2';
+    var basePrice = parseInt(document.querySelector('.calc-type.on').getAttribute('data-price'));
+    var extras = 0;
+    document.querySelectorAll('.calc-extra.on').forEach(function(e) {
+        extras += parseInt(e.getAttribute('data-add'));
+    });
+    var total = (basePrice + extras) * area;
+    document.getElementById('calcTotal').textContent = total.toLocaleString('ru-RU') + ' \u20bd';
+}
+updateCalc();
 var BOT_TOKEN = '', CHAT_ID = '', lastSubmit = 0, submitCount = 0;
 document.getElementById('fN').addEventListener('input', function() { this.value = this.value.replace(/[^a-zA-Z\u0430-\u044f\u0410-\u042f\u0451\u0401\s\-]/g, ''); });
 document.getElementById('fP').addEventListener('input', function() {
