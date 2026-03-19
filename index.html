@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ДунаевСтрой — Ремонт квартир и домов под ключ</title>
     <meta name="description" content="ДунаевСтрой — ремонт квартир и домов под ключ. Качественный ремонт от профессиональной команды.">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23c0c0c0'/><text x='16' y='22' text-anchor='middle' font-size='10' font-weight='900' fill='%23111'>ДС</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23a0e632'/><text x='16' y='22' text-anchor='middle' font-size='10' font-weight='900' fill='%23111'>ДС</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://images.unsplash.com">
@@ -13,40 +13,22 @@
     <link rel="preload" as="image" href="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1600&q=80">
     <style>
 :root, [data-theme="1"] {
-    --bg: #0a0a0a; --bg2: #111; --bg3: #1a1a1a; --bg4: #222;
-    --border: rgba(192,192,192,.12); --border2: rgba(192,192,192,.2);
-    --text: #ddd; --text2: #999; --text3: #666;
-    --heading: #fff; --accent: #c0c0c0; --accent2: #e0e0e0; --accent3: #909090;
-    --accent-bg: rgba(192,192,192,.05); --accent-bg2: rgba(192,192,192,.1);
-    --accent-shadow: rgba(192,192,192,.15); --hdr-bg: rgba(10,10,10,.9);
-    --card-bg: rgba(255,255,255,.03);
+    --bg: #0a0a0a; --bg2: #111; --bg3: #161616; --bg4: #1c1c1c;
+    --border: rgba(160,230,130,.1); --border2: rgba(160,230,130,.2);
+    --text: #ccc; --text2: #888; --text3: #555;
+    --heading: #fff; --accent: #a0e632; --accent2: #c4ff50; --accent3: #7ec020;
+    --accent-bg: rgba(160,230,50,.06); --accent-bg2: rgba(160,230,50,.12);
+    --accent-shadow: rgba(160,230,50,.2); --hdr-bg: rgba(10,10,10,.92);
+    --card-bg: rgba(160,230,50,.04); --card-solid: #141414;
 }
 [data-theme="2"] {
-    --bg: #faf6eb; --bg2: #f2ecda; --bg3: #eae3cc; --bg4: #e0d8bf;
-    --border: rgba(120,100,55,.15); --border2: rgba(120,100,55,.25);
-    --text: #4a3f2f; --text2: #7a6b50; --text3: #9a8b6f;
-    --heading: #2a2010; --accent: #8a7030; --accent2: #6a5520; --accent3: #a08838;
-    --accent-bg: rgba(138,112,48,.06); --accent-bg2: rgba(138,112,48,.12);
-    --accent-shadow: rgba(138,112,48,.15); --hdr-bg: rgba(250,246,235,.95);
-    --card-bg: rgba(138,112,48,.04);
-}
-[data-theme="3"] {
-    --bg: #231710; --bg2: #2e1f14; --bg3: #3b2a1a; --bg4: #483522;
-    --border: rgba(144,190,109,.12); --border2: rgba(144,190,109,.2);
-    --text: #c8bca0; --text2: #9a8e74; --text3: #726652;
-    --heading: #ece0c8; --accent: #90be6d; --accent2: #b0d890; --accent3: #70a050;
-    --accent-bg: rgba(144,190,109,.05); --accent-bg2: rgba(144,190,109,.1);
-    --accent-shadow: rgba(144,190,109,.15); --hdr-bg: rgba(35,23,16,.92);
-    --card-bg: rgba(144,190,109,.03);
-}
-[data-theme="4"] {
-    --bg: #231710; --bg2: #2e1f14; --bg3: #3b2a1a; --bg4: #483522;
-    --border: rgba(129,216,208,.12); --border2: rgba(129,216,208,.2);
-    --text: #c8bca0; --text2: #9a8e74; --text3: #726652;
-    --heading: #ece0c8; --accent: #81d8d0; --accent2: #a8ece6; --accent3: #5cc0b8;
-    --accent-bg: rgba(129,216,208,.05); --accent-bg2: rgba(129,216,208,.1);
-    --accent-shadow: rgba(129,216,208,.15); --hdr-bg: rgba(35,23,16,.92);
-    --card-bg: rgba(129,216,208,.03);
+    --bg: #0a0a0a; --bg2: #111; --bg3: #161616; --bg4: #1c1c1c;
+    --border: rgba(255,214,0,.1); --border2: rgba(255,214,0,.2);
+    --text: #ccc; --text2: #888; --text3: #555;
+    --heading: #fff; --accent: #ffd600; --accent2: #ffe54c; --accent3: #ccab00;
+    --accent-bg: rgba(255,214,0,.06); --accent-bg2: rgba(255,214,0,.12);
+    --accent-shadow: rgba(255,214,0,.2); --hdr-bg: rgba(10,10,10,.92);
+    --card-bg: rgba(255,214,0,.04); --card-solid: #141414;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
@@ -60,28 +42,30 @@ img { display: block; max-width: 100%; content-visibility: auto; }
 .topbar {
     background: var(--bg2);
     border-bottom: 1px solid var(--border);
-    padding: 8px 0;
+    padding: 12px 0;
     font-size: 13px;
 }
 .topbar-in {
-    max-width: 1200px;
+    max-width: 100%;
     margin: 0 auto;
-    padding: 0 24px;
+    padding: 0 32px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 .topbar-left { color: var(--text2); }
-.topbar-right { display: flex; gap: 20px; }
-.topbar-right a { color: var(--accent); font-weight: 600; transition: color .2s; }
-.topbar-right a:hover { color: var(--accent2); }
+.topbar-sep { color: var(--text3); user-select: none; }
+.topbar-right { display: flex; gap: 0; align-items: center; }
+.topbar-right a { color: var(--accent); font-weight: 600; transition: color .2s; padding: 6px 16px; border-radius: 6px; display: flex; align-items: center; gap: 6px; }
+.topbar-right a:hover { color: var(--accent2); background: var(--accent-bg); }
 .hdr { position: sticky; top: 0; z-index: 40; background: var(--hdr-bg); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); }
 .hdr-in { max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; }
 .hdr-left { display: flex; align-items: center; gap: 16px; }
 .hdr-right { display: flex; align-items: center; gap: 16px; }
-.logo { display: flex; align-items: center; gap: 10px; }
-.logo-b { width: 40px; height: 40px; border-radius: 10px; background: var(--accent); display: flex; align-items: center; justify-content: center; color: var(--bg); font-weight: 900; font-size: 11px; font-family: 'Unbounded', sans-serif; }
-.logo-t { color: var(--accent); font-weight: 800; font-size: 17px; }
+.logo { display: flex; align-items: center; gap: 0; }
+.logo-t { color: var(--accent); font-weight: 800; font-size: 20px; letter-spacing: -0.5px; }
 .burger { display: flex; flex-direction: column; gap: 5px; width: 44px; height: 44px; cursor: pointer; z-index: 55; justify-content: center; align-items: center; -webkit-tap-highlight-color: transparent; }
 .burger span { display: block; width: 24px; height: 2.5px; background: var(--accent); border-radius: 2px; transition: all .3s; }
 .burger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
@@ -125,9 +109,6 @@ img { display: block; max-width: 100%; content-visibility: auto; }
     position: absolute;
     inset: 0;
     background: linear-gradient(90deg, var(--bg) 30%, rgba(0,0,0,.2) 100%);
-}
-[data-theme="2"] .hero-bg::after {
-    background: linear-gradient(90deg, var(--bg) 35%, rgba(250,246,235,.3) 100%);
 }
 .hero-in {
     position: relative;
@@ -275,7 +256,20 @@ img { display: block; max-width: 100%; content-visibility: auto; }
 .trust-item svg { color: var(--accent); opacity: .6; }
 .sec { padding: 80px 0; }
 .sec-a { background: var(--bg2); }
-.sec-in { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.sec-bg { position: relative; }
+.sec-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: .06;
+    pointer-events: none;
+}
+#services.sec-bg::before { background-image: url('https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&q=60'); }
+#steps.sec-bg::before { background-image: url('https://images.unsplash.com/photo-1541123603104-512919d6a96c?w=1200&q=60'); }
+#contacts.sec-bg::before { background-image: url('https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1200&q=60'); }
+.sec-in { max-width: 1200px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
 .sec-h { margin-bottom: 48px; }
 .sec-h.center { text-align: center; }
 .sec-h h2 { font-size: clamp(28px, 4vw, 44px); font-weight: 900; color: var(--heading); margin-bottom: 10px; }
@@ -354,15 +348,15 @@ img { display: block; max-width: 100%; content-visibility: auto; }
     align-items: center;
     gap: 24px;
     padding: 20px 24px;
-    background: var(--card-bg);
-    border: 1px solid var(--border);
+    background: var(--card-solid);
+    border: 1px solid var(--border2);
     border-radius: 14px;
     cursor: pointer;
     transition: all .3s;
 }
 .svc-row:hover {
-    border-color: var(--border2);
-    background: var(--accent-bg);
+    border-color: var(--accent);
+    background: var(--accent-bg2);
 }
 .svc-row h3 {
     font-size: 17px;
@@ -425,10 +419,10 @@ img { display: block; max-width: 100%; content-visibility: auto; }
     flex: 0 0 320px;
     border-radius: 16px;
     overflow: hidden;
-    border: 1px solid var(--border);
+    border: 1px solid var(--border2);
     scroll-snap-align: start;
     transition: all .3s;
-    background: var(--bg3);
+    background: var(--card-solid);
 }
 .port-card:hover { border-color: var(--border2); transform: translateY(-4px); }
 .port-card-img {
@@ -477,8 +471,8 @@ img { display: block; max-width: 100%; content-visibility: auto; }
 }
 .step-card {
     padding: 32px 24px;
-    background: var(--card-bg);
-    border: 1px solid var(--border);
+    background: var(--card-solid);
+    border: 1px solid var(--border2);
     text-align: center;
     transition: all .3s;
     position: relative;
@@ -522,11 +516,11 @@ img { display: block; max-width: 100%; content-visibility: auto; }
     gap: 16px;
     padding: 18px;
     border-radius: 12px;
-    background: var(--card-bg);
-    border: 1px solid var(--border);
+    background: var(--card-solid);
+    border: 1px solid var(--border2);
     transition: all .2s;
 }
-.ct-card:hover { border-color: var(--border2); }
+.ct-card:hover { border-color: var(--accent); }
 .ct-card-ic {
     width: 44px;
     height: 44px;
@@ -540,7 +534,7 @@ img { display: block; max-width: 100%; content-visibility: auto; }
 }
 .ct-card-lb { font-size: 12px; color: var(--text3); }
 .ct-card-val { font-size: 18px; font-weight: 700; color: var(--heading); }
-.frm { padding: 28px; border-radius: 16px; background: var(--card-bg); border: 1px solid var(--border); }
+.frm { padding: 28px; border-radius: 16px; background: var(--card-solid); border: 1px solid var(--border2); }
 .frm h3 { font-size: 20px; font-weight: 700; color: var(--heading); margin-bottom: 22px; font-family: 'Nunito Sans', sans-serif; }
 .frm-f { margin-bottom: 12px; }
 .frm-f label { color: var(--text2); font-size: 13px; display: block; margin-bottom: 5px; }
@@ -625,19 +619,16 @@ img { display: block; max-width: 100%; content-visibility: auto; }
 .theme-btn { width: 28px; height: 28px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: all .2s; }
 .theme-btn:hover { transform: scale(1.15); }
 .theme-btn.active { border-color: var(--accent); }
-.theme-btn[data-t="1"] { background: linear-gradient(135deg, #0a0a0a 50%, #c0c0c0 50%); }
-.theme-btn[data-t="2"] { background: linear-gradient(135deg, #faf6eb 50%, #8a7030 50%); }
-.theme-btn[data-t="3"] { background: linear-gradient(135deg, #231710 50%, #90be6d 50%); }
-.theme-btn[data-t="4"] { background: linear-gradient(135deg, #231710 50%, #81d8d0 50%); }
+.theme-btn[data-t="1"] { background: linear-gradient(135deg, #0a0a0a 50%, #a0e632 50%); }
+.theme-btn[data-t="2"] { background: linear-gradient(135deg, #0a0a0a 50%, #ffd600 50%); }
 .calc { background: var(--bg); }
 .calc-wrap {
     max-width: 720px;
     margin: 0 auto;
     padding: 40px;
     border-radius: 24px;
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    backdrop-filter: blur(10px);
+    background: var(--card-solid);
+    border: 1px solid var(--border2);
 }
 .calc-group { margin-bottom: 28px; }
 .calc-group:last-of-type { margin-bottom: 32px; }
@@ -790,9 +781,10 @@ img { display: block; max-width: 100%; content-visibility: auto; }
 }
 @media (max-width: 768px) {
     .nav { display: none; }
-    .logo-t { display: none; }
     .hdr-cta { display: none; }
-    .topbar-left { display: none; }
+    .topbar-in { flex-direction: column; gap: 6px; padding: 0 16px; }
+    .topbar-sep { display: none; }
+    .topbar-right { flex-wrap: wrap; justify-content: center; }
     .hero { min-height: 80vh; }
     .hero-bg { background-position: center center; }
 }
@@ -804,8 +796,7 @@ body.menu-open { overflow: hidden; }
     .steps-grid { grid-template-columns: 1fr; }
     .step-card, .step-card:first-child, .step-card:last-child, .step-card:nth-child(2), .step-card:nth-child(3) { border-radius: 14px; }
     .port-card { flex: 0 0 280px; }
-    .topbar-right { gap: 12px; }
-    .topbar-right a { font-size: 12px; }
+    .topbar-right a { font-size: 12px; padding: 4px 10px; }
     .ct-card-val { font-size: 16px; }
     .avito-banner-body { padding: 24px; }
     .avito-banner-body h3 { font-size: 18px; }
@@ -819,10 +810,13 @@ body.menu-open { overflow: hidden; }
 <body>
 <div class="topbar">
     <div class="topbar-in">
-        <div class="topbar-left">&#9200; Ежедневно с 8:00 до 21:00 &bull; Москва и МО</div>
+        <div class="topbar-left">&#9200; Ежедневно 8:00–21:00 &bull; Москва и МО</div>
+        <span class="topbar-sep">|</span>
         <div class="topbar-right">
-            <a href="tel:+79999999999">+7 999 999-99-99</a>
-            <a href="https://t.me/+79999999999" target="_blank">Telegram</a>
+            <a href="tel:+79999999999">&#128222; +7 999 999-99-99</a>
+            <a href="https://t.me/+79999999999" target="_blank">&#9992;&#65039; Telegram</a>
+            <a href="https://wa.me/79999999999" target="_blank">&#128172; WhatsApp</a>
+            <a href="https://www.avito.ru/" target="_blank">&#127968; Авито</a>
         </div>
     </div>
 </div>
@@ -839,7 +833,7 @@ body.menu-open { overflow: hidden; }
     <div class="hdr-in">
         <div class="hdr-left">
             <div class="burger" id="burger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
-            <a href="#" class="logo"><div class="logo-b">ДС</div><span class="logo-t">ДунаевСтрой</span></a>
+            <a href="#" class="logo"><span class="logo-t">ДунаевСтрой</span></a>
         </div>
         <div class="hdr-right">
             <nav class="nav">
@@ -906,7 +900,7 @@ body.menu-open { overflow: hidden; }
         </div>
     </div>
 </section>
-<section id="services" class="sec sec-a">
+<section id="services" class="sec sec-a sec-bg">
     <div class="sec-in">
         <div class="sec-h center rv"><h2>Наши <span>услуги</span></h2><p>Нажмите на услугу для подробностей</p></div>
         <div class="svc-list" id="svcList"></div>
@@ -955,7 +949,7 @@ body.menu-open { overflow: hidden; }
     </div>
     <div class="port-scroll" id="portScroll"></div>
 </section>
-<section id="steps" class="sec sec-a">
+<section id="steps" class="sec sec-a sec-bg">
     <div class="sec-in">
         <div class="sec-h center rv"><h2>Как мы <span>работаем</span></h2><p>4 простых шага к вашему идеальному ремонту</p></div>
         <div class="steps-grid rv">
@@ -983,7 +977,7 @@ body.menu-open { overflow: hidden; }
         </div>
     </div>
 </section>
-<section id="contacts" class="sec sec-a">
+<section id="contacts" class="sec sec-a sec-bg">
     <div class="sec-in">
         <div class="sec-h center rv"><h2>Оставить <span>заявку</span></h2><p>Свяжемся в течение 15 минут</p></div>
         <div class="ct-layout">
@@ -1025,8 +1019,6 @@ body.menu-open { overflow: hidden; }
 <div class="theme-sw">
     <button class="theme-btn active" data-t="1" onclick="setTheme('1')"></button>
     <button class="theme-btn" data-t="2" onclick="setTheme('2')"></button>
-    <button class="theme-btn" data-t="3" onclick="setTheme('3')"></button>
-    <button class="theme-btn" data-t="4" onclick="setTheme('4')"></button>
 </div>
 <footer class="ftr"><div class="ftr-in"><span>&copy; <script>document.write(new Date().getFullYear())</script> ДунаевСтрой</span><a href="tel:+79999999999">+7 999 999-99-99</a></div></footer>
 <div class="flt">
@@ -1045,7 +1037,7 @@ function setTheme(t) {
     document.querySelectorAll('.theme-btn').forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-t') === t); });
     try { localStorage.setItem('ds-theme', t); } catch(e) {}
 }
-(function() { try { var s = localStorage.getItem('ds-theme'); if (s && ['1','2','3','4'].indexOf(s) !== -1) setTheme(s); } catch(e) {} })();
+(function() { try { var s = localStorage.getItem('ds-theme'); if (s && ['1','2'].indexOf(s) !== -1) setTheme(s); } catch(e) {} })();
 var svcs = [
     { t: 'Общестроительные работы', d: 'Демонтаж, черновая отделка, перегородки', p: 'от 2 500 \u20bd/м\u00b2', tags: ['Демонтаж', 'Стяжка', 'Гидроизоляция', 'Перегородки'] },
     { t: 'Отделочные работы', d: 'Шпаклёвка, покраска, обои, декор', p: 'от 3 000 \u20bd/м\u00b2', tags: ['Шпаклёвка', 'Покраска', 'Обои', 'Декоративная штукатурка'] },
