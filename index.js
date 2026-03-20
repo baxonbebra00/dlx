@@ -17,19 +17,26 @@ const API_KEY = '7826253a44d5ad197ad0f9cc95d564b400773e7a44c2d5bb';
 const TG_TOKEN = '8679703791:AAG9if6keUSRufK65ebZByeRLrZUSkiH-U8';
 const TG_CHATS = ['7479507723', '5510639654'];
 
+// РЕЖИМ РАБОТЫ:
+// 'check' — только проверка DM (быстро, ~2 сек/юзер, без лайков/подписок)
+// 'like'  — только лайки+подписки для закрытых DM (из closed_dm.txt)
+// 'full'  — всё сразу (как раньше)
+const MODE = process.argv[2] || 'check';
+
 const CONFIG = {
   LIKE_POSTS: [1, 3, 5, 7],
-  MAX_FOLLOWS_PER_PROFILE: 12,   // макс подписок на 1 профиль за прогон
+  MAX_FOLLOWS_PER_PROFILE: 12,
   RETRY: 3,
-  BATCH: () => 8 + Math.floor(Math.random() * 5),
+  BATCH: () => MODE === 'check' ? 20 + Math.floor(Math.random() * 10) : 8 + Math.floor(Math.random() * 5),
   DELAY: {
-    afterOpen:    [3000, 5000],     // было 1.5-2.5с → 3-5с (страница полностью грузится)
-    betweenLikes: [800, 1500],     // было 0.5-0.8с → 0.8-1.5с
-    betweenUsers: [3000, 6000],    // было 1-2с → 3-6с (главная пауза между аккаунтами)
-    afterLike:    [800, 1200],     // было 0.5-0.8с → 0.8-1.2с
-    retry:        [1500, 2500],    // было 0.8-1.2с → 1.5-2.5с
-    betweenStart: [5000, 8000],    // было 2-3с → 5-8с (между батчами/профилями)
-    afterDMCheck: [1000, 2000],    // НОВЫЙ — пауза после проверки DM
+    // В режиме check — минимальные задержки (просто грузим страницу)
+    afterOpen:    MODE === 'check' ? [1500, 2500] : [3000, 5000],
+    betweenLikes: [800, 1500],
+    betweenUsers: MODE === 'check' ? [1000, 2000] : [3000, 6000],
+    afterLike:    [800, 1200],
+    retry:        [1500, 2500],
+    betweenStart: MODE === 'check' ? [3000, 5000] : [5000, 8000],
+    afterDMCheck: MODE === 'check' ? [300, 600] : [1000, 2000],
   },
 };
 
@@ -37,6 +44,7 @@ const USERS_FILE  = path.join(__dirname, 'users.txt');
 const DONE_FILE   = path.join(__dirname, 'done.txt');
 const FAILED_FILE = path.join(__dirname, 'failed.txt');
 const OPEN_DM_FILE = path.join(__dirname, 'open_dm.txt');
+const CLOSED_DM_FILE = path.join(__dirname, 'closed_dm.txt');
 const HISTORY_FILE = path.join(__dirname, 'rate_history.json');
 const LOG_FILE    = path.join(__dirname, 'log_' + new Date().toISOString().slice(0,16).replace(/[T:]/g,'-') + '.txt');
 const logStream   = fs.createWriteStream(LOG_FILE, { flags: 'a' });
@@ -509,6 +517,13 @@ function markOpenDM(username) {
   }
 }
 
+function markClosedDM(username) {
+  const existing = readLines(CLOSED_DM_FILE);
+  if (!existing.includes(username)) {
+    fs.appendFileSync(CLOSED_DM_FILE, username + '\n', 'utf8');
+  }
+}
+
 function removeFailed(username) {
   if (!fs.existsSync(FAILED_FILE)) return;
   const lines = readLines(FAILED_FILE).filter((u) => u !== username);
@@ -519,7 +534,23 @@ function buildQueue(allUsers) {
   const done   = loadDone();
   const failed = loadFailed();
   const dmOpen = new Set(readLines(OPEN_DM_FILE));
-  // Пропускаем уже проверенных с открытым DM
+  const dmClosed = new Set(readLines(CLOSED_DM_FILE));
+
+  if (MODE === 'like') {
+    // Режим лайков: берём только закрытые DM, которые ещё не обработаны
+    const likeQueue = [...dmClosed].filter((u) => !done.has(u));
+    log('Режим LIKE: ' + likeQueue.length + ' юзеров с закрытыми DM для лайков');
+    return likeQueue;
+  }
+
+  if (MODE === 'check') {
+    // Режим проверки: пропускаем тех кого уже проверили (open/closed/done)
+    const checkQueue = allUsers.filter((u) => !done.has(u) && !failed.has(u) && !dmOpen.has(u) && !dmClosed.has(u));
+    log('Режим CHECK: ' + checkQueue.length + ' юзеров для проверки DM');
+    return checkQueue;
+  }
+
+  // Режим full (как раньше)
   const pending = allUsers.filter((u) => !done.has(u) && !failed.has(u) && !dmOpen.has(u));
   const retries = [...failed].filter((u) => !done.has(u) && !dmOpen.has(u));
   const mixed = [...retries];
@@ -738,8 +769,9 @@ async function checkSessionAlive(page, id) {
 }
 
 async function processUser(page, username, num, total, id, followsLeft) {
-  const stats = ' [DM✓' + statDmOpen + ' DM✗' + statDmClosed + ' | ' + rateLimiter.status() + ']';
-  log('[' + num + '/' + total + '] @' + username + ' (подписок осталось: ' + followsLeft + ')' + stats, 'INFO', id);
+  const stats = ' [DM✓' + statDmOpen + ' DM✗' + statDmClosed + (MODE !== 'check' ? ' | ' + rateLimiter.status() : '') + ']';
+  const followInfo = MODE === 'check' ? '' : ' (подписок осталось: ' + followsLeft + ')';
+  log('[' + num + '/' + total + '] @' + username + followInfo + stats, 'INFO', id);
 
   let loaded = false;
   for (let attempt = 1; attempt <= 3; attempt++) {
@@ -757,21 +789,21 @@ async function processUser(page, username, num, total, id, followsLeft) {
   await wait(CONFIG.DELAY.afterOpen);
   await dismissCookies(page);
 
-  // Имитация человека — двинуть мышь по странице (человек не сидит с мышью в углу)
-  await human.idleMove(page);
-
-  // Человеческая пауза каждые N юзеров
-  const humanPause = human.shouldPause(num);
-  if (humanPause) {
-    log('Пауза (имитация)', 'INFO', id);
-    await wait(humanPause);
+  // Имитация человека — только в режимах с лайками
+  if (MODE !== 'check') {
+    await human.idleMove(page);
+    const humanPause = human.shouldPause(num);
+    if (humanPause) {
+      log('Пауза (имитация)', 'INFO', id);
+      await wait(humanPause);
+    }
   }
 
   // Проверка сессии (редирект на логин)
   if (!await checkSessionAlive(page, id)) return 'session_dead';
 
-  // Проверка бана/ограничения на странице профиля
-  const restriction = await checkAccountRestriction(page, id);
+  // Проверка бана/ограничения — только при лайках (в check не нужно)
+  const restriction = MODE !== 'check' ? await checkAccountRestriction(page, id) : null;
   if (restriction) {
     if (restriction.type === 'suspended' || restriction.type === 'locked') {
       burnedProfiles.add(id);
@@ -825,9 +857,16 @@ async function processUser(page, username, num, total, id, followsLeft) {
     return 'ok';
   }
 
-  // DM закрыты — подписка + лайки
-  log('✗ DM закрыты — подписка + лайки', 'INFO', id);
+  // DM закрыты
   statDmClosed++;
+
+  if (MODE === 'check') {
+    log('✗ DM закрыты — записал в closed_dm.txt', 'INFO', id);
+    markClosedDM(username);
+    return 'ok';
+  }
+
+  log('✗ DM закрыты — подписка + лайки', 'INFO', id);
 
   // Подписка (если не превышен лимит профиля И дневной лимит)
   if (followsLeft > 0 && rateLimiter.canFollow()) {
@@ -1077,7 +1116,8 @@ async function runProfile(userId, queue, totalUsers) {
 }
 
 (async () => {
-  console.log('\nx.com DM Checker\n');
+  const modeNames = { check: 'ПРОВЕРКА DM (быстрый)', like: 'ЛАЙКИ + ПОДПИСКИ', full: 'ПОЛНЫЙ' };
+  console.log('\nx.com DM Checker — режим: ' + (modeNames[MODE] || MODE) + '\n');
 
   let allUsers;
   try { allUsers = loadUsers(); }
@@ -1091,7 +1131,9 @@ async function runProfile(userId, queue, totalUsers) {
   log('Всего: ' + allUsers.length + ', готово: ' + done.size + ', неудавшихся: ' + failed.size + ', DM открыты (ранее): ' + dmOpenPrev + ', в очереди: ' + queue.remaining());
   if (!queue.remaining()) { log('Все обработаны'); logStream.end(); return; }
 
-  tg('<b>DM Checker старт</b> (запуск #' + history.totalRuns + ')\n\nВсего: ' + allUsers.length + '\nГотово: ' + done.size + '\nDM открыты (ранее): ' + dmOpenPrev + '\nВ очереди: ' + queue.remaining() + '\n\n<b>Обученные лимиты:</b>\nЛайки: ' + rateLimiter.safeLikesPerDay + '/день\nПодписки: ' + rateLimiter.safeFollowsPerDay + '/день\nКулдаун лайков: ' + history.baseLikeCooldown + ' мин\nКулдаун подписок: ' + history.baseFollowCooldown + ' мин\nRL за неделю: ' + history.events.filter((e) => e.ts > Date.now() - 7*24*3600*1000).length);
+  const dmClosedPrev = readLines(CLOSED_DM_FILE).length;
+  const modeLabel = modeNames[MODE] || MODE;
+  tg('<b>DM Checker старт</b> (запуск #' + history.totalRuns + ')\nРежим: ' + modeLabel + '\n\nВсего: ' + allUsers.length + '\nГотово: ' + done.size + '\nDM открыты: ' + dmOpenPrev + '\nDM закрыты: ' + dmClosedPrev + '\nВ очереди: ' + queue.remaining() + (MODE !== 'check' ? '\n\n<b>Лимиты:</b>\nЛайки: ' + rateLimiter.safeLikesPerDay + '/день\nПодписки: ' + rateLimiter.safeFollowsPerDay + '/день' : ''));
 
   let profileIdx = 0;
 
