@@ -598,6 +598,7 @@ async function followUser(page, id) {
 }
 
 async function checkDMOpen(page) {
+  let profileLoaded = false;
   try {
     await withTimeout(page.waitForFunction(() => {
       const btns = Array.from(document.querySelectorAll('[role="button"]'));
@@ -606,8 +607,10 @@ async function checkDMOpen(page) {
         return t === 'Follow' || t === 'Following' || t === 'Unfollow';
       });
     }, { timeout: 8000 }), 12000, 'waitForFollow');
-  } catch (e) {
-  }
+    profileLoaded = true;
+  } catch (e) {}
+
+  if (!profileLoaded) return null;
 
   const result = await safeEval(page, () => {
     const dmBtn = document.querySelector('[data-testid="sendDMFromProfile"]');
@@ -770,6 +773,11 @@ async function processUser(page, username, num, total, id, followsLeft) {
   const dmOpen = await checkDMOpen(page);
   await wait(CONFIG.DELAY.afterDMCheck);
 
+  if (dmOpen === null) {
+    log('Профиль не загрузился — пропускаю', 'WARN', id);
+    return 'error';
+  }
+
   if (dmOpen) {
     log('✉ DM ОТКРЫТЫ — сохраняю', 'INFO', id);
     markOpenDM(username);
@@ -882,7 +890,7 @@ async function runProfileBatch(userId, users, totalUsers, profileFollows) {
     xDetector.reset();
     attachNetworkDetector(page, userId);
 
-    await withTimeout(page.goto('https://x.com/home', { waitUntil: 'networkidle2', timeout: 40000 }), 50000, 'goto home');
+    await withTimeout(page.goto('https://x.com/home', { waitUntil: 'domcontentloaded', timeout: 20000 }), 25000, 'goto home');
     await wait([2000, 3000]);
     await dismissCookies(page);
 
