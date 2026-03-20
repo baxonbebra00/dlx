@@ -198,9 +198,7 @@ let stopping = false;
 let lastTgStatus = 0; // когда последний раз слали статус в TG
 const TG_STATUS_INTERVAL = 50; // каждые N обработанных юзеров — статус в TG
 
-const profileRLCount = {};  // { profileId: number }
-const burnedProfiles = new Set(); // заблокированные до конца прогона
-const MAX_RL_PER_PROFILE = 3; // после 3 RL — стоп профиля
+const burnedProfiles = new Set();
 
 const xDetector = {
   lastReset: 0,     // unix ts когда лимит сбросится (из заголовка)
@@ -796,16 +794,9 @@ async function processUser(page, username, num, total, id, followsLeft) {
       if (followResult === 'ratelimit') {
         rateLimiter.followRL++;
         rateLimiter.recordRL('follow_rl', id);
-        profileRLCount[id] = (profileRLCount[id] || 0) + 1;
         const cd = rateLimiter.getFollowCooldown();
-        const rlNum = profileRLCount[id];
-        log('RL подписок #' + rateLimiter.followRL + ' (профиль: ' + rlNum + '/' + MAX_RL_PER_PROFILE + ') — СТОП', 'WARN', id);
-        tg('⚠️ Рейтлимит подписок (x' + rateLimiter.followRL + ')\nПрофиль: ' + id.slice(-4) + ' (' + rlNum + '/' + MAX_RL_PER_PROFILE + ' RL)\nПауза: ' + rateLimiter.formatCooldown(cd) + '\n' + rateLimiter.status());
-        if (rlNum >= MAX_RL_PER_PROFILE) {
-          burnedProfiles.add(id);
-          log('🚫 ПРОФИЛЬ ЗАБЛОКИРОВАН до конца прогона (' + rlNum + ' RL)', 'ERROR', id);
-          tg('🚫 <b>ПРОФИЛЬ ЗАБЛОКИРОВАН</b>\n' + id.slice(-4) + ' — ' + rlNum + ' рейтлимитов, пропускаю до конца прогона');
-        }
+        log('RL подписок — пауза ' + rateLimiter.formatCooldown(cd), 'WARN', id);
+        tg('⚠️ Рейтлимит подписок\nПрофиль: ' + id.slice(-4) + '\nПауза: ' + rateLimiter.formatCooldown(cd) + '\n' + rateLimiter.status());
         return 'ratelimit';
       }
       if (followResult === 'ok') { statFollows++; rateLimiter.followsToday++; break; }
@@ -847,16 +838,9 @@ async function processUser(page, username, num, total, id, followsLeft) {
     if (likeFails >= 3) {
       rateLimiter.likeRL++;
       rateLimiter.recordRL('like_rl', id);
-      profileRLCount[id] = (profileRLCount[id] || 0) + 1;
       const cd = rateLimiter.getLikeCooldown();
-      const rlNum = profileRLCount[id];
-      log('RL лайков #' + rateLimiter.likeRL + ' (профиль: ' + rlNum + '/' + MAX_RL_PER_PROFILE + ') — СТОП ПРОФИЛЯ, пауза ' + rateLimiter.formatCooldown(cd), 'WARN', id);
-      tg('⚠️ Рейтлимит лайков (x' + rateLimiter.likeRL + ')\nПрофиль: ' + id.slice(-4) + ' (' + rlNum + '/' + MAX_RL_PER_PROFILE + ' RL)\nПауза: ' + rateLimiter.formatCooldown(cd) + '\n' + rateLimiter.status());
-      if (rlNum >= MAX_RL_PER_PROFILE) {
-        burnedProfiles.add(id);
-        log('🚫 ПРОФИЛЬ ЗАБЛОКИРОВАН до конца прогона (' + rlNum + ' RL)', 'ERROR', id);
-        tg('🚫 <b>ПРОФИЛЬ ЗАБЛОКИРОВАН</b>\n' + id.slice(-4) + ' — ' + rlNum + ' рейтлимитов, пропускаю до конца прогона');
-      }
+      log('RL лайков — пауза ' + rateLimiter.formatCooldown(cd), 'WARN', id);
+      tg('⚠️ Рейтлимит лайков\nПрофиль: ' + id.slice(-4) + '\nПауза: ' + rateLimiter.formatCooldown(cd) + '\n' + rateLimiter.status());
       return 'ratelimit';
     }
     await wait(CONFIG.DELAY.betweenLikes);
@@ -933,10 +917,8 @@ async function runProfileBatch(userId, users, totalUsers, profileFollows) {
       }
 
       if (xDetector.count429 >= 5 && (Date.now() - xDetector.last429) < 120000) {
-        log('🔴 429 шторм (' + xDetector.count429 + ' за сессию) — стоп профиля', 'ERROR', userId);
-        profileRLCount[userId] = (profileRLCount[userId] || 0) + 2; // +2 сразу за шторм
-        if (profileRLCount[userId] >= MAX_RL_PER_PROFILE) burnedProfiles.add(userId);
-        tg('🔴 <b>429 ШТОРМ</b>\nПрофиль: ' + userId.slice(-4) + '\n' + xDetector.count429 + ' ответов 429 — стоп');
+        log('429 шторм (' + xDetector.count429 + ') — пауза', 'WARN', userId);
+        tg('🔴 429 шторм\nПрофиль: ' + userId.slice(-4) + '\n' + xDetector.count429 + ' ответов 429 — пауза');
         for (let j = i; j < users.length; j++) markFailed(users[j].username);
         return { status: 'ratelimit', follows: profileFollows };
       }
@@ -1066,7 +1048,6 @@ async function runProfile(userId, queue, totalUsers) {
 
   if (likeQueue.remaining() > 0 && !stopping) {
     burnedProfiles.clear();
-    for (const k of Object.keys(profileRLCount)) delete profileRLCount[k];
 
     banner('ФАЗА 2: ЛАЙКИ + ПОДПИСКИ (' + likeQueue.remaining() + ' юзеров с закрытыми DM)');
     tg('<b>ФАЗА 2: Лайки + подписки</b>\n\nЮзеров: ' + likeQueue.remaining() + '\n\n<b>Лимиты:</b>\nЛайки: ' + rateLimiter.safeLikesPerDay + '/день\nПодписки: ' + rateLimiter.safeFollowsPerDay + '/день');
