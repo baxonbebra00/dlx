@@ -21,7 +21,7 @@ const TG_CHATS = ['7479507723', '5510639654'];
 // 'check' — только проверка DM (быстро, ~2 сек/юзер, без лайков/подписок)
 // 'like'  — только лайки+подписки для закрытых DM (из closed_dm.txt)
 // 'full'  — всё сразу (как раньше)
-const MODE = process.argv[2] || 'check';
+let MODE = process.argv[2] || 'check';
 
 const CONFIG = {
   LIKE_POSTS: [1, 3, 5, 7],
@@ -29,14 +29,13 @@ const CONFIG = {
   RETRY: 3,
   BATCH: () => MODE === 'check' ? 20 + Math.floor(Math.random() * 10) : 8 + Math.floor(Math.random() * 5),
   DELAY: {
-    // В режиме check — минимальные задержки (просто грузим страницу)
-    afterOpen:    MODE === 'check' ? [1500, 2500] : [3000, 5000],
-    betweenLikes: [800, 1500],
-    betweenUsers: MODE === 'check' ? [1000, 2000] : [3000, 6000],
-    afterLike:    [800, 1200],
-    retry:        [1500, 2500],
-    betweenStart: MODE === 'check' ? [3000, 5000] : [5000, 8000],
-    afterDMCheck: MODE === 'check' ? [300, 600] : [1000, 2000],
+    get afterOpen()    { return MODE === 'check' ? [1500, 2500] : [3000, 5000]; },
+    get betweenLikes() { return [800, 1500]; },
+    get betweenUsers() { return MODE === 'check' ? [1000, 2000] : [3000, 6000]; },
+    get afterLike()    { return [800, 1200]; },
+    get retry()        { return [1500, 2500]; },
+    get betweenStart() { return MODE === 'check' ? [3000, 5000] : [5000, 8000]; },
+    get afterDMCheck() { return MODE === 'check' ? [300, 600] : [1000, 2000]; },
   },
 };
 
@@ -1116,62 +1115,103 @@ async function runProfile(userId, queue, totalUsers) {
 }
 
 (async () => {
-  const modeNames = { check: 'ПРОВЕРКА DM (быстрый)', like: 'ЛАЙКИ + ПОДПИСКИ', full: 'ПОЛНЫЙ' };
-  console.log('\nx.com DM Checker — режим: ' + (modeNames[MODE] || MODE) + '\n');
+  console.log('\nx.com DM Checker\n');
 
   let allUsers;
   try { allUsers = loadUsers(); }
   catch (e) { log(e.message, 'ERROR'); process.exit(1); }
 
-  const done   = loadDone();
-  const failed = loadFailed();
+  // ════════════════════════════════════════════
+  // ФАЗа 1: БЫСТРАЯ ПРОВЕРКА DM (все профили параллельно)
+  // ════════════════════════════════════════════
+  const doneBefore = loadDone();
   const dmOpenPrev = readLines(OPEN_DM_FILE).length;
-  const queue  = createQueue(buildQueue(allUsers));
-
-  log('Всего: ' + allUsers.length + ', готово: ' + done.size + ', неудавшихся: ' + failed.size + ', DM открыты (ранее): ' + dmOpenPrev + ', в очереди: ' + queue.remaining());
-  if (!queue.remaining()) { log('Все обработаны'); logStream.end(); return; }
-
   const dmClosedPrev = readLines(CLOSED_DM_FILE).length;
-  const modeLabel = modeNames[MODE] || MODE;
-  tg('<b>DM Checker старт</b> (запуск #' + history.totalRuns + ')\nРежим: ' + modeLabel + '\n\nВсего: ' + allUsers.length + '\nГотово: ' + done.size + '\nDM открыты: ' + dmOpenPrev + '\nDM закрыты: ' + dmClosedPrev + '\nВ очереди: ' + queue.remaining() + (MODE !== 'check' ? '\n\n<b>Лимиты:</b>\nЛайки: ' + rateLimiter.safeLikesPerDay + '/день\nПодписки: ' + rateLimiter.safeFollowsPerDay + '/день' : ''));
+  const checkQueue = createQueue(buildQueue(allUsers));
 
-  let profileIdx = 0;
+  if (checkQueue.remaining() > 0) {
+    banner('ФАЗА 1: ПРОВЕРКА DM (' + checkQueue.remaining() + ' юзеров, ' + PROFILES.length + ' профилей параллельно)');
+    tg('<b>ФАЗА 1: Проверка DM</b>\n\nВсего: ' + allUsers.length + '\nУже проверено: ' + doneBefore.size + '\nDM открыты: ' + dmOpenPrev + '\nDM закрыты: ' + dmClosedPrev + '\nВ очереди: ' + checkQueue.remaining() + '\nПрофилей: ' + PROFILES.length + ' (параллельно)');
 
-  while (queue.remaining() > 0 && !stopping) {
-    const userId = PROFILES[profileIdx % PROFILES.length];
-    const profileNum = (profileIdx % PROFILES.length) + 1;
+    // Запускаем ВСЕ профили параллельно — каждый тянет из общей очереди
+    const checkPromises = PROFILES.map((userId, i) => {
+      const profileNum = i + 1;
+      log('Запуск профиля ' + profileNum + ' для проверки DM', 'INFO', userId);
+      return runProfile(userId, checkQueue, allUsers.length).catch((e) => {
+        log('Профиль ' + profileNum + ' ошибка: ' + e.message, 'ERROR', userId);
+      });
+    });
 
-    // Если все профили сгорели — стоп
-    if (burnedProfiles.size >= PROFILES.length) {
-      log('🚫 ВСЕ ПРОФИЛИ ЗАБЛОКИРОВАНЫ — завершаю', 'ERROR');
-      tg('🚫 <b>ВСЕ ПРОФИЛИ ЗАБЛОКИРОВАНЫ</b>\nОсталось в очереди: ' + queue.remaining() + '\nЗавершаю до следующего запуска');
-      break;
-    }
+    await Promise.all(checkPromises);
 
-    // Пропускаем заблокированный профиль
-    if (burnedProfiles.has(userId)) {
-      log('Профиль ' + profileNum + ' заблокирован — пропускаю', 'WARN', userId);
-      profileIdx++;
-      continue;
-    }
-
-    banner('ПРОФИЛЬ ' + profileNum + ' / ' + PROFILES.length + ' (' + userId + ')');
-    await runProfile(userId, queue, allUsers.length);
-    banner('ПРОФИЛЬ ' + profileNum + ' ЗАВЕРШЁН | осталось: ' + queue.remaining());
-
-    const doneSize = loadDone().size;
-    const openDM = readLines(OPEN_DM_FILE).length;
-    tg('<b>Профиль ' + profileNum + ' завершён</b>\n\nСделано: ' + doneSize + '/' + allUsers.length + '\nDM открыты: ' + openDM + '\nDM закрыты: ' + statDmClosed + '\nОсталось: ' + queue.remaining() + '\nПрогноз: ~' + eta(queue.remaining()) + '\n\n' + rateLimiter.status());
-
-    profileIdx++;
-    if (queue.remaining() > 0 && !stopping) await wait(CONFIG.DELAY.betweenStart);
+    const openDMAfterCheck = readLines(OPEN_DM_FILE).length;
+    const closedDMAfterCheck = readLines(CLOSED_DM_FILE).length;
+    banner('ФАЗА 1 ЗАВЕРШЕНА | DM открыты: ' + openDMAfterCheck + ' | DM закрыты: ' + closedDMAfterCheck);
+    tg('<b>ФАЗА 1 завершена</b>\n\nDM открыты: ' + openDMAfterCheck + '\nDM закрыты: ' + closedDMAfterCheck + '\nВремя: ' + elapsed() + '\n\nПереход к фазе 2 — лайки');
+  } else {
+    log('Все DM уже проверены — переход к лайкам');
   }
 
+  if (stopping) { logStream.end(); return; }
+
+  // ════════════════════════════════════════════
+  // ФАЗа 2: ЛАЙКИ + ПОДПИСКИ (по очереди, аккуратно)
+  // ════════════════════════════════════════════
+  // Переключаем режим — теперь с лайками, имитацией, защитой
+  // MODE уже не 'check', меняем поведение через глобальную переменную
+  MODE = 'like';
+
+  // Пересобираем очередь из closed_dm.txt
+  const likeQueue = createQueue(buildQueue(allUsers));
+
+  if (likeQueue.remaining() > 0 && !stopping) {
+    // Сбрасываем burnedProfiles для фазы 2
+    burnedProfiles.clear();
+    // Сбрасываем RL счётчики профилей
+    for (const k of Object.keys(profileRLCount)) delete profileRLCount[k];
+
+    banner('ФАЗА 2: ЛАЙКИ + ПОДПИСКИ (' + likeQueue.remaining() + ' юзеров с закрытыми DM)');
+    tg('<b>ФАЗА 2: Лайки + подписки</b>\n\nЮзеров: ' + likeQueue.remaining() + '\n\n<b>Лимиты:</b>\nЛайки: ' + rateLimiter.safeLikesPerDay + '/день\nПодписки: ' + rateLimiter.safeFollowsPerDay + '/день');
+
+    let profileIdx = 0;
+
+    while (likeQueue.remaining() > 0 && !stopping) {
+      const userId = PROFILES[profileIdx % PROFILES.length];
+      const profileNum = (profileIdx % PROFILES.length) + 1;
+
+      if (burnedProfiles.size >= PROFILES.length) {
+        log('ВСЕ ПРОФИЛИ ЗАБЛОКИРОВАНЫ — завершаю', 'ERROR');
+        tg('🚫 <b>ВСЕ ПРОФИЛИ ЗАБЛОКИРОВАНЫ</b>\nОсталось: ' + likeQueue.remaining());
+        break;
+      }
+
+      if (burnedProfiles.has(userId)) {
+        profileIdx++;
+        continue;
+      }
+
+      banner('ПРОФИЛЬ ' + profileNum + ' (' + userId.slice(-4) + ') — лайки');
+      await runProfile(userId, likeQueue, allUsers.length);
+
+      const doneSize = loadDone().size;
+      tg('<b>Профиль ' + profileNum + '</b>\n\nСделано: ' + doneSize + '/' + allUsers.length + '\nОсталось: ' + likeQueue.remaining() + '\nETA: ' + eta(likeQueue.remaining()) + '\n\n' + rateLimiter.status());
+
+      profileIdx++;
+      if (likeQueue.remaining() > 0 && !stopping) await wait(CONFIG.DELAY.betweenStart);
+    }
+  } else {
+    log('Нет юзеров с закрытыми DM для лайков');
+  }
+
+  // ════════════════════════════════════════════
+  // ИТОГО
+  // ════════════════════════════════════════════
   const doneNow = loadDone();
   const failedNow = loadFailed();
   const openDMNow = readLines(OPEN_DM_FILE).length;
+  const closedDMNow = readLines(CLOSED_DM_FILE).length;
   const status = stopping ? 'ОСТАНОВЛЕНО' : 'ВСЁ ГОТОВО';
-  banner(status + ': ' + doneNow.size + '/' + allUsers.length + ' | DM открыты: ' + openDMNow + ' | DM закрыты: ' + statDmClosed + ' | подписок: ' + statFollows + ' | пропущено: ' + statSkipped + ' | ошибки: ' + failedNow.size);
-  tg('<b>DM Checker ' + (stopping ? 'СТОП' : 'ГОТОВО') + '</b>\n\nСделано: ' + doneNow.size + '/' + allUsers.length + '\nDM открыты: ' + openDMNow + '\nDM закрыты: ' + statDmClosed + '\nПодписок: ' + statFollows + '\nПропущено: ' + statSkipped + '\nОшибки: ' + failedNow.size + '\nВремя: ' + elapsed() + '\n\n' + rateLimiter.status());
+  banner(status + ' | DM открыты: ' + openDMNow + ' | DM закрыты: ' + closedDMNow + ' | подписок: ' + statFollows + ' | ошибки: ' + failedNow.size);
+  tg('<b>DM Checker ' + (stopping ? 'СТОП' : 'ГОТОВО') + '</b>\n\nDM открыты: ' + openDMNow + '\nDM закрыты (лайкнуты): ' + doneNow.size + '\nПодписок: ' + statFollows + '\nОшибки: ' + failedNow.size + '\nВремя: ' + elapsed() + '\n\n' + rateLimiter.status());
   logStream.end();
 })();
