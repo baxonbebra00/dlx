@@ -4,23 +4,17 @@ const https = require('https');
 const path = require('path');
 const fs = require('fs');
 
-// Вставь ID профилей AdsPower 
 const PROFILES = [
   'ID_1',
   'ID_2',
   'ID_3',
 ];
 
-// API ключ из AdsPower
 const API_KEY = '7826253a44d5ad197ad0f9cc95d564b400773e7a44c2d5bb';
 
 const TG_TOKEN = '8679703791:AAG9if6keUSRufK65ebZByeRLrZUSkiH-U8';
 const TG_CHATS = ['7479507723', '5510639654'];
 
-// РЕЖИМ РАБОТЫ:
-// 'check' — только проверка DM (быстро, ~2 сек/юзер, без лайков/подписок)
-// 'like'  — только лайки+подписки для закрытых DM (из closed_dm.txt)
-// 'full'  — всё сразу (как раньше)
 let MODE = process.argv[2] || 'check';
 
 const CONFIG = {
@@ -77,14 +71,6 @@ function tg(msg) {
   }
 }
 
-// ─── Адаптивный рейтлимитер с обучением ───
-// Сохраняет историю рейтлимитов в rate_history.json
-// При каждом запуске загружает и адаптирует лимиты
-// Лимиты X (документация + практика):
-//   Подписки: 400/день (free), 1000/день (Premium)
-//   Лайки: ~1000/день, динамический лимит
-//   Кулдаун: 15-60 мин стандарт, 24ч при повторном нарушении
-
 function loadHistory() {
   try {
     if (fs.existsSync(HISTORY_FILE)) return JSON.parse(fs.readFileSync(HISTORY_FILE, 'utf8'));
@@ -106,23 +92,19 @@ function saveHistory(h) {
 const history = loadHistory();
 history.totalRuns++;
 
-// Обучение: анализируем последние 7 дней RL-событий и снижаем лимиты
 (function learnFromHistory() {
   const week = Date.now() - 7 * 24 * 3600 * 1000;
   const recent = history.events.filter((e) => e.ts > week);
   if (!recent.length) return;
 
-  // Находим при каком кол-ве лайков/подписок ловили RL
   const likeRLs = recent.filter((e) => e.type === 'like_rl');
   const followRLs = recent.filter((e) => e.type === 'follow_rl');
 
   if (likeRLs.length >= 2) {
-    // Берём минимальное кол-во лайков при котором поймали RL и ставим 80% от него
     const minLikes = Math.min(...likeRLs.map((e) => e.likesAtMoment || 800));
     history.safeLikes = Math.max(Math.floor(minLikes * 0.8), 100); // не ниже 100
     log('Обучение: лимит лайков снижен до ' + history.safeLikes + '/день (RL при ' + minLikes + ')');
   } else if (likeRLs.length === 0 && history.safeLikes < 800) {
-    // Нет RL за неделю — плавно восстанавливаем лимит (+10% за запуск, макс 800)
     history.safeLikes = Math.min(Math.floor(history.safeLikes * 1.1), 800);
     log('Обучение: лимит лайков восстановлен до ' + history.safeLikes + '/день (0 RL за неделю)');
   }
@@ -135,7 +117,6 @@ history.totalRuns++;
     log('Обучение: лимит подписок восстановлен до ' + history.safeFollows + '/день (0 RL за неделю)');
   }
 
-  // Кулдауны: вычисляем из кол-ва RL, а не накапливаем бесконечно
   if (likeRLs.length > 3) {
     history.baseLikeCooldown = Math.min(10 + likeRLs.length, 30); // 10 + кол-во RL, макс 30
     log('Обучение: кулдаун лайков = ' + history.baseLikeCooldown + ' мин (' + likeRLs.length + ' RL за неделю)');
@@ -151,7 +132,6 @@ history.totalRuns++;
     log('Обучение: кулдаун подписок сброшен до 5 мин (0 RL за неделю)');
   }
 
-  // Сохраняем обученные параметры
   saveHistory(history);
 })();
 
@@ -174,7 +154,6 @@ const rateLimiter = {
     return Math.min(base * mult, 30 * 60 * 1000);
   },
 
-  // Записать RL-событие в историю
   recordRL(type, profileId) {
     history.events.push({
       type: type,
@@ -183,7 +162,6 @@ const rateLimiter = {
       followsAtMoment: this.followsToday,
       ts: Date.now(),
     });
-    // Чистим события старше 30 дней
     const month = Date.now() - 30 * 24 * 3600 * 1000;
     history.events = history.events.filter((e) => e.ts > month);
     saveHistory(history);
@@ -220,21 +198,16 @@ let stopping = false;
 let lastTgStatus = 0; // когда последний раз слали статус в TG
 const TG_STATUS_INTERVAL = 50; // каждые N обработанных юзеров — статус в TG
 
-// Трекер RL на профиль — если 3+ RL за прогон, профиль блокируется
 const profileRLCount = {};  // { profileId: number }
 const burnedProfiles = new Set(); // заблокированные до конца прогона
 const MAX_RL_PER_PROFILE = 3; // после 3 RL — стоп профиля
 
-// ─── Детектор рейтлимитов и банов через сеть + DOM ───
-// X отдаёт 429 с заголовком x-rate-limit-reset (unix timestamp)
-// Также показывает UI-баннеры при ограничениях/банах
 const xDetector = {
   lastReset: 0,     // unix ts когда лимит сбросится (из заголовка)
   last429: 0,       // когда последний 429
   count429: 0,      // сколько 429 за сессию
   banned: false,    // обнаружен бан
 
-  // Вычислить сколько ждать до сброса лимита (из заголовка x-rate-limit-reset)
   getWaitMs() {
     if (!this.lastReset) return 0;
     const now = Math.floor(Date.now() / 1000);
@@ -250,7 +223,6 @@ const xDetector = {
     return min + ' мин';
   },
 
-  // Сброс между профилями — 429 от профиля 1 не должны влиять на профиль 2
   reset() {
     this.lastReset = 0;
     this.last429 = 0;
@@ -258,13 +230,11 @@ const xDetector = {
   },
 };
 
-// Подключить перехватчик сети к странице — ловит 429 и читает заголовки
 function attachNetworkDetector(page, profileId) {
   page.on('response', (response) => {
     try {
       const status = response.status();
       const url = response.url();
-      // Только X API запросы
       if (!url.includes('x.com/i/api') && !url.includes('twitter.com/i/api')) return;
 
       if (status === 429) {
@@ -281,7 +251,6 @@ function attachNetworkDetector(page, profileId) {
         }
       }
 
-      // 403 часто = бан или ограничение аккаунта
       if (status === 403 && url.includes('/api/')) {
         log('🔴 403 от X API — возможно ограничение аккаунта', 'WARN', profileId);
       }
@@ -289,43 +258,35 @@ function attachNetworkDetector(page, profileId) {
   });
 }
 
-// Проверить DOM на признаки бана/ограничения аккаунта
 async function checkAccountRestriction(page, profileId) {
   const restriction = await safeEval(page, () => {
     const body = document.body ? document.body.innerText : '';
 
-    // Бан аккаунта
     if (body.includes('Your account is suspended') || body.includes('Account suspended')) {
       return { type: 'suspended', msg: 'Account suspended' };
     }
 
-    // Временное ограничение
     if (body.includes('temporarily limited') || body.includes('Temporarily restricted')) {
       return { type: 'restricted', msg: 'Temporarily restricted' };
     }
 
-    // Locked — требуется верификация
     if (body.includes('Your account has been locked') || body.includes('account is locked')) {
       return { type: 'locked', msg: 'Account locked — требуется верификация' };
     }
 
-    // Rate limit страница — только если это системное сообщение, не текст в био юзера
     if (body.includes('Rate limit exceeded') || body.includes('rate limit exceeded')) {
       return { type: 'ratelimit_page', msg: 'Rate limit exceeded page' };
     }
-    // X показывает "Try again later" при временных лимитах
     const h1 = document.querySelector('h1');
     if (h1 && (h1.textContent.includes('Try again') || h1.textContent.includes('Something went wrong'))) {
       return { type: 'ratelimit_page', msg: h1.textContent.slice(0, 80) };
     }
 
-    // Captcha / challenge
     if (body.includes('arkose') || document.querySelector('iframe[src*="arkose"]') ||
         document.querySelector('iframe[src*="challenge"]')) {
       return { type: 'captcha', msg: 'Captcha/challenge detected' };
     }
 
-    // "Something went wrong" — часто при ограничениях
     const errorH = document.querySelector('[data-testid="error-detail"]');
     if (errorH) {
       return { type: 'error_page', msg: errorH.textContent.slice(0, 100) };
@@ -343,7 +304,6 @@ async function checkAccountRestriction(page, profileId) {
   return restriction;
 }
 
-// Graceful shutdown — Ctrl+C сохраняет прогресс
 process.on('SIGINT', () => {
   if (stopping) { process.exit(1); }
   stopping = true;
@@ -351,10 +311,8 @@ process.on('SIGINT', () => {
 });
 process.on('SIGTERM', () => { stopping = true; });
 
-// Ловим необработанные ошибки — без этого Node падает молча
 process.on('unhandledRejection', (err) => {
   log('Необработанная ошибка: ' + (err && err.message ? err.message : String(err)), 'ERROR');
-  // Не крашим процесс — продолжаем работу
 });
 process.on('uncaughtException', (err) => {
   log('Критическая ошибка: ' + err.message, 'ERROR');
@@ -383,23 +341,17 @@ function elapsed() {
 const rnd  = (range) => range[0] + Math.floor(Math.random() * (range[1] - range[0] + 1));
 const wait = (range) => new Promise((r) => setTimeout(r, rnd(range)));
 
-// ─── Имитация человека ───
-// Мышь двигается плавно, скролл естественный, паузы нерегулярные
 const human = {
-  // Двигает мышь к элементу с случайным смещением (не в центр)
   async moveToElement(page, el) {
     try {
       const box = await withTimeout(el.boundingBox(), 3000, 'boundingBox');
       if (!box) return;
-      // Человек кликает не в центр — смещение ±30% от центра
       const x = box.x + box.width * (0.3 + Math.random() * 0.4);
       const y = box.y + box.height * (0.3 + Math.random() * 0.4);
-      // Плавное движение мыши (steps = естественность)
       await page.mouse.move(x, y, { steps: 5 + Math.floor(Math.random() * 10) });
     } catch (e) { /* не критично */ }
   },
 
-  // Человеческий клик — подвести мышь + случайная задержка перед кликом
   async click(page, el) {
     await this.moveToElement(page, el);
     await wait([50, 150]); // человек не кликает мгновенно после наведения
@@ -414,7 +366,6 @@ const human = {
     }
   },
 
-  // Естественный скролл — не ровно 500px, а случайно + разное поведение
   async scroll(page) {
     const distance = 200 + Math.floor(Math.random() * 400); // 200-600px
     const behavior = Math.random() > 0.3 ? 'smooth' : 'auto'; // 70% smooth
@@ -422,7 +373,6 @@ const human = {
     await wait([200, 500]);
   },
 
-  // Случайное движение мыши по странице (имитация чтения)
   async idleMove(page) {
     try {
       const x = 200 + Math.floor(Math.random() * 600);
@@ -431,19 +381,14 @@ const human = {
     } catch (e) { /* не критично */ }
   },
 
-  // "Человек читает" — каждый N-й юзер делает случайную паузу
   shouldPause(n) {
-    // Каждые 5-12 юзеров — пауза 3-8с (человек отвлёкся)
     if (n > 0 && n % (5 + Math.floor(Math.random() * 8)) === 0) return [3000, 8000];
     return null;
   },
 
-  // Рандомный порядок лайков (не всегда 1→3→5→7)
   shuffleLikeOrder(posts) {
-    // 80% — обычный порядок, 20% — слегка перемешанный
     if (Math.random() > 0.2) return [...posts];
     const arr = [...posts];
-    // Свапаем 1-2 пары
     for (let i = 0; i < 1 + Math.floor(Math.random() * 2); i++) {
       const a = Math.floor(Math.random() * arr.length);
       const b = Math.floor(Math.random() * arr.length);
@@ -453,7 +398,6 @@ const human = {
   },
 };
 
-// Таймаут-обёртка: любой промис умрёт через ms, не зависнет навечно
 function withTimeout(promise, ms, label) {
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error('Таймаут ' + (label || '') + ' (' + ms + 'мс)')), ms);
@@ -464,19 +408,16 @@ function withTimeout(promise, ms, label) {
   });
 }
 
-// Безопасный evaluate — не зависнет если страница мертва
 async function safeEval(page, fn, timeout) {
   try { return await withTimeout(page.evaluate(fn), timeout || 15000, 'evaluate'); }
   catch (e) { log('safeEval: ' + e.message, 'WARN'); return null; }
 }
 
-// Безопасный селектор
 async function safeQuery(page, selector, timeout) {
   try { return await withTimeout(page.$(selector), timeout || 10000, '$(' + selector + ')'); }
   catch (e) { return null; }
 }
 
-// Безопасный querySelectorAll
 async function safeQueryAll(page, selector, timeout) {
   try { return await withTimeout(page.$$(selector), timeout || 10000, '$$(' + selector + ')'); }
   catch (e) { return []; }
@@ -536,20 +477,17 @@ function buildQueue(allUsers) {
   const dmClosed = new Set(readLines(CLOSED_DM_FILE));
 
   if (MODE === 'like') {
-    // Режим лайков: берём только закрытые DM, которые ещё не обработаны
     const likeQueue = [...dmClosed].filter((u) => !done.has(u));
     log('Режим LIKE: ' + likeQueue.length + ' юзеров с закрытыми DM для лайков');
     return likeQueue;
   }
 
   if (MODE === 'check') {
-    // Режим проверки: пропускаем тех кого уже проверили (open/closed/done)
     const checkQueue = allUsers.filter((u) => !done.has(u) && !failed.has(u) && !dmOpen.has(u) && !dmClosed.has(u));
     log('Режим CHECK: ' + checkQueue.length + ' юзеров для проверки DM');
     return checkQueue;
   }
 
-  // Режим full (как раньше)
   const pending = allUsers.filter((u) => !done.has(u) && !failed.has(u) && !dmOpen.has(u));
   const retries = [...failed].filter((u) => !done.has(u) && !dmOpen.has(u));
   const mixed = [...retries];
@@ -612,7 +550,6 @@ async function dismissCookies(page) {
 }
 
 async function followUser(page, id) {
-  // Сначала проверяем — уже подписаны?
   const status = await safeEval(page, () => {
     const btns = Array.from(document.querySelectorAll('[role="button"]'));
     const already = btns.find((b) => { const t = (b.textContent || '').trim(); return t === 'Following' || t === 'Unfollow'; });
@@ -625,7 +562,6 @@ async function followUser(page, id) {
   if (status === 'already') { log('Уже подписан', 'INFO', id); return 'already'; }
   if (!status) { log('Кнопка подписки не найдена', 'WARN', id); return 'not_found'; }
 
-  // Человеческий клик по кнопке Follow — ищем кнопку через Puppeteer
   const allBtns = await safeQueryAll(page, '[role="button"]');
   let targetBtn = null;
   for (const btn of allBtns) {
@@ -639,7 +575,6 @@ async function followUser(page, id) {
   if (targetBtn) {
     await human.click(page, targetBtn); // мышь + клик как человек
   } else {
-    // Fallback — клик через JS
     await safeEval(page, () => {
       const btns = Array.from(document.querySelectorAll('[role="button"]'));
       const f = btns.find((b) => (b.textContent || '').trim() === 'Follow');
@@ -665,7 +600,6 @@ async function followUser(page, id) {
 }
 
 async function checkDMOpen(page) {
-  // Ждём появление кнопки Follow/Following — надёжный сигнал что кнопки профиля загрузились
   try {
     await withTimeout(page.waitForFunction(() => {
       const btns = Array.from(document.querySelectorAll('[role="button"]'));
@@ -675,7 +609,6 @@ async function checkDMOpen(page) {
       });
     }, { timeout: 8000 }), 12000, 'waitForFollow');
   } catch (e) {
-    // Кнопка не появилась — проверяем DM всё равно
   }
 
   const result = await safeEval(page, () => {
@@ -722,13 +655,11 @@ async function likePost(page, index) {
   if (state === 'already') return { ok: true, why: 'already' };
   if (state === 'none') return { ok: false, why: 'no_button' };
 
-  // Человеческий клик по лайку — мышью, не через JS
   try {
     const likeBtn = await withTimeout(article.$('[data-testid="like"]'), 3000, 'findLikeBtn');
     if (likeBtn) {
       await human.click(page, likeBtn);
     } else {
-      // Fallback
       await withTimeout(article.evaluate((el) => { el.querySelector('[data-testid="like"]').click(); }), 5000, 'clickLike');
     }
   } catch (e) { return { ok: false, why: 'click_timeout' }; }
@@ -741,7 +672,6 @@ async function likePost(page, index) {
   return ok ? { ok: true, why: 'liked' } : { ok: false, why: 'not_confirmed' };
 }
 
-// Возвращает: 'liked' (новый лайк), 'already' (уже был), false (не удалось)
 async function likeWithRetry(page, index, id) {
   for (let i = 1; i <= CONFIG.RETRY; i++) {
     const r = await likePost(page, index);
@@ -788,7 +718,6 @@ async function processUser(page, username, num, total, id, followsLeft) {
   await wait(CONFIG.DELAY.afterOpen);
   await dismissCookies(page);
 
-  // Имитация человека — только в режимах с лайками
   if (MODE !== 'check') {
     await human.idleMove(page);
     const humanPause = human.shouldPause(num);
@@ -798,10 +727,8 @@ async function processUser(page, username, num, total, id, followsLeft) {
     }
   }
 
-  // Проверка сессии (редирект на логин)
   if (!await checkSessionAlive(page, id)) return 'session_dead';
 
-  // Проверка бана/ограничения — только при лайках (в check не нужно)
   const restriction = MODE !== 'check' ? await checkAccountRestriction(page, id) : null;
   if (restriction) {
     if (restriction.type === 'suspended' || restriction.type === 'locked') {
@@ -814,7 +741,6 @@ async function processUser(page, username, num, total, id, followsLeft) {
       return 'session_dead';
     }
     if (restriction.type === 'restricted' || restriction.type === 'ratelimit_page') {
-      // Используем время из 429 заголовка если есть
       const apiWait = xDetector.getWaitMs();
       if (apiWait > 0) {
         log('Ждём сброс лимита X API: ' + xDetector.formatWait(), 'WARN', id);
@@ -823,7 +749,6 @@ async function processUser(page, username, num, total, id, followsLeft) {
       return 'ratelimit';
     }
     if (restriction.type === 'error_page') {
-      // Ошибка на странице — скорее всего временная проблема X
       log('Ошибка страницы X — пропускаю юзера', 'WARN', id);
       return 'error';
     }
@@ -832,7 +757,6 @@ async function processUser(page, username, num, total, id, followsLeft) {
   const empty = await safeQuery(page, '[data-testid="empty_state_header_text"]');
   if (empty) { log('Не найден', 'WARN', id); statSkipped++; return 'skip'; }
 
-  // Suspended / заблокирован
   const suspended = await safeEval(page, () => {
     const h = document.querySelector('h2');
     if (h && (h.textContent.includes('suspended') || h.textContent.includes('Account suspended'))) return true;
@@ -845,7 +769,6 @@ async function processUser(page, username, num, total, id, followsLeft) {
   const locked = await safeQuery(page, '[data-testid="shieldIcon"]');
   if (locked) { log('Приватный', 'WARN', id); statSkipped++; return 'skip'; }
 
-  // Проверяем открыты ли DM
   const dmOpen = await checkDMOpen(page);
   await wait(CONFIG.DELAY.afterDMCheck);
 
@@ -856,7 +779,6 @@ async function processUser(page, username, num, total, id, followsLeft) {
     return 'ok';
   }
 
-  // DM закрыты
   statDmClosed++;
 
   if (MODE === 'check') {
@@ -867,7 +789,6 @@ async function processUser(page, username, num, total, id, followsLeft) {
 
   log('✗ DM закрыты — подписка + лайки', 'INFO', id);
 
-  // Подписка (если не превышен лимит профиля И дневной лимит)
   if (followsLeft > 0 && rateLimiter.canFollow()) {
     let followResult = 'error';
     for (let attempt = 1; attempt <= 2; attempt++) {
@@ -898,7 +819,6 @@ async function processUser(page, username, num, total, id, followsLeft) {
     log('Дневной лимит подписок (' + rateLimiter.followsToday + '/' + rateLimiter.safeFollowsPerDay + ') — только лайки', 'WARN', id);
   }
 
-  // Проверяем дневной лимит лайков
   if (!rateLimiter.canLike()) {
     log('Дневной лимит лайков (' + rateLimiter.likesToday + '/' + rateLimiter.safeLikesPerDay + ') — пропускаю', 'WARN', id);
     return 'ok';
@@ -907,7 +827,6 @@ async function processUser(page, username, num, total, id, followsLeft) {
   const hasPosts = await safeQuery(page, 'article[data-testid="tweet"]');
   if (!hasPosts) { log('Нет постов', 'WARN', id); return 'ok'; }
 
-  // Иногда лайкаем не в идеальном порядке — 20% шанс перемешать
   const likeOrder = human.shuffleLikeOrder(CONFIG.LIKE_POSTS);
 
   let likeFails = 0;
@@ -925,7 +844,6 @@ async function processUser(page, username, num, total, id, followsLeft) {
     } else {
       likeFails++;
     }
-    // Если 3+ лайка подряд не прошли — рейтлимит, СТОП ПРОФИЛЯ
     if (likeFails >= 3) {
       rateLimiter.likeRL++;
       rateLimiter.recordRL('like_rl', id);
@@ -977,7 +895,6 @@ async function runProfileBatch(userId, users, totalUsers, profileFollows) {
     const pages = await withTimeout(browser.pages(), 10000, 'browser.pages');
     const page = pages[pages.length - 1];
 
-    // Сбрасываем детектор и подключаем к новой странице
     xDetector.reset();
     attachNetworkDetector(page, userId);
 
@@ -985,7 +902,6 @@ async function runProfileBatch(userId, users, totalUsers, profileFollows) {
     await wait([2000, 3000]);
     await dismissCookies(page);
 
-    // Проверяем бан/ограничение сразу после захода
     const homeRestriction = await checkAccountRestriction(page, userId);
     if (homeRestriction) {
       if (homeRestriction.type === 'suspended' || homeRestriction.type === 'locked') {
@@ -1008,7 +924,6 @@ async function runProfileBatch(userId, users, totalUsers, profileFollows) {
     for (let i = 0; i < users.length; i++) {
       if (stopping) { log('Остановка по Ctrl+C', 'WARN', userId); return { status: 'stopped', follows: profileFollows }; }
 
-      // Проверка: страница жива? Если Puppeteer потерял связь — стоп
       try {
         await withTimeout(page.evaluate(() => true), 5000, 'pageAlive');
       } catch (e) {
@@ -1017,7 +932,6 @@ async function runProfileBatch(userId, users, totalUsers, profileFollows) {
         return { status: 'session_dead', follows: profileFollows };
       }
 
-      // 429 шторм: если 5+ 429 за последние 2 минуты — стоп профиля немедленно
       if (xDetector.count429 >= 5 && (Date.now() - xDetector.last429) < 120000) {
         log('🔴 429 шторм (' + xDetector.count429 + ' за сессию) — стоп профиля', 'ERROR', userId);
         profileRLCount[userId] = (profileRLCount[userId] || 0) + 2; // +2 сразу за шторм
@@ -1027,7 +941,6 @@ async function runProfileBatch(userId, users, totalUsers, profileFollows) {
         return { status: 'ratelimit', follows: profileFollows };
       }
 
-      // Периодический статус в TG каждые N юзеров
       if (processed > 0 && processed - lastTgStatus >= TG_STATUS_INTERVAL) {
         lastTgStatus = processed;
         const doneNow = loadDone().size;
@@ -1041,7 +954,6 @@ async function runProfileBatch(userId, users, totalUsers, profileFollows) {
       const followsBefore = statFollows;
       const result = await processUser(page, username, users[i].num, totalUsers, userId, followsLeft);
 
-      // Трекаем подписки этого профиля через глобальный счётчик
       if (statFollows > followsBefore) {
         profileFollows += (statFollows - followsBefore);
       }
@@ -1071,7 +983,6 @@ async function runProfileBatch(userId, users, totalUsers, profileFollows) {
     return { status: 'ok', follows: profileFollows };
   } catch (e) {
     log('Ошибка: ' + e.message, 'ERROR', userId);
-    // Помечаем необработанных юзеров как failed чтобы не потерять их
     const d = loadDone(); // читаем ОДИН раз, не N раз
     for (const u of users) {
       if (!d.has(u.username)) markFailed(u.username);
@@ -1097,7 +1008,6 @@ async function runProfile(userId, queue, totalUsers) {
 
     if (status === 'stopped' || status === 'session_dead') break;
     if (status === 'ratelimit') {
-      // Приоритет: реальное время из X API > наш расчётный кулдаун
       const apiWait = xDetector.getWaitMs();
       const ourCd = rateLimiter.getLikeCooldown();
       const cd = apiWait > 0 ? Math.max(apiWait + 30000, ourCd) : ourCd; // +30с запас к API времени
@@ -1121,9 +1031,6 @@ async function runProfile(userId, queue, totalUsers) {
   try { allUsers = loadUsers(); }
   catch (e) { log(e.message, 'ERROR'); process.exit(1); }
 
-  // ════════════════════════════════════════════
-  // ФАЗа 1: БЫСТРАЯ ПРОВЕРКА DM (все профили параллельно)
-  // ════════════════════════════════════════════
   const doneBefore = loadDone();
   const dmOpenPrev = readLines(OPEN_DM_FILE).length;
   const dmClosedPrev = readLines(CLOSED_DM_FILE).length;
@@ -1133,7 +1040,6 @@ async function runProfile(userId, queue, totalUsers) {
     banner('ФАЗА 1: ПРОВЕРКА DM (' + checkQueue.remaining() + ' юзеров, ' + PROFILES.length + ' профилей параллельно)');
     tg('<b>ФАЗА 1: Проверка DM</b>\n\nВсего: ' + allUsers.length + '\nУже проверено: ' + doneBefore.size + '\nDM открыты: ' + dmOpenPrev + '\nDM закрыты: ' + dmClosedPrev + '\nВ очереди: ' + checkQueue.remaining() + '\nПрофилей: ' + PROFILES.length + ' (параллельно)');
 
-    // Запускаем ВСЕ профили параллельно — каждый тянет из общей очереди
     const checkPromises = PROFILES.map((userId, i) => {
       const profileNum = i + 1;
       log('Запуск профиля ' + profileNum + ' для проверки DM', 'INFO', userId);
@@ -1154,20 +1060,12 @@ async function runProfile(userId, queue, totalUsers) {
 
   if (stopping) { logStream.end(); return; }
 
-  // ════════════════════════════════════════════
-  // ФАЗа 2: ЛАЙКИ + ПОДПИСКИ (по очереди, аккуратно)
-  // ════════════════════════════════════════════
-  // Переключаем режим — теперь с лайками, имитацией, защитой
-  // MODE уже не 'check', меняем поведение через глобальную переменную
   MODE = 'like';
 
-  // Пересобираем очередь из closed_dm.txt
   const likeQueue = createQueue(buildQueue(allUsers));
 
   if (likeQueue.remaining() > 0 && !stopping) {
-    // Сбрасываем burnedProfiles для фазы 2
     burnedProfiles.clear();
-    // Сбрасываем RL счётчики профилей
     for (const k of Object.keys(profileRLCount)) delete profileRLCount[k];
 
     banner('ФАЗА 2: ЛАЙКИ + ПОДПИСКИ (' + likeQueue.remaining() + ' юзеров с закрытыми DM)');
@@ -1203,9 +1101,6 @@ async function runProfile(userId, queue, totalUsers) {
     log('Нет юзеров с закрытыми DM для лайков');
   }
 
-  // ════════════════════════════════════════════
-  // ИТОГО
-  // ════════════════════════════════════════════
   const doneNow = loadDone();
   const failedNow = loadFailed();
   const openDMNow = readLines(OPEN_DM_FILE).length;
