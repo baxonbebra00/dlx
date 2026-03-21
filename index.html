@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://images.unsplash.com">
-    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Nunito+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Nunito+Sans:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="preload" as="image" href="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1600&q=80">
     <style>
 :root, [data-theme="1"] {
@@ -30,10 +30,21 @@
     --accent-shadow: rgba(255,214,0,.2); --hdr-bg: rgba(10,10,10,.92);
     --card-bg: rgba(255,214,0,.04); --card-solid: #141414;
 }
+[data-theme="3"] {
+    --bg: #4a2f3a; --bg2: #3d2632; --bg3: #553542; --bg4: #5e3c4c;
+    --border: rgba(245,225,224,.12); --border2: rgba(245,225,224,.2);
+    --text: #e8d5d4; --text2: #c4a8a6; --text3: #9a7b79;
+    --heading: #fff; --accent: #f5e1e0; --accent2: #fff0ef; --accent3: #dcc5c4;
+    --accent-bg: rgba(245,225,224,.08); --accent-bg2: rgba(245,225,224,.14);
+    --accent-shadow: rgba(245,225,224,.15); --hdr-bg: rgba(74,47,58,.94);
+    --card-bg: rgba(245,225,224,.05); --card-solid: rgba(245,225,224,.1);
+    --font-heading: 'Cormorant Garamond', serif;
+    --font-body: 'Montserrat', sans-serif;
+}
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
-body { font-family: 'Nunito Sans', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; transition: background .4s, color .4s; }
-h1, h2, h3, h4, .logo-t { font-family: 'Unbounded', sans-serif; }
+body { font-family: var(--font-body, 'Nunito Sans', sans-serif); background: var(--bg); color: var(--text); overflow-x: hidden; transition: background .4s, color .4s; }
+h1, h2, h3, h4, .logo-t { font-family: var(--font-heading, 'Unbounded', sans-serif); }
 a { text-decoration: none; color: inherit; }
 section[id] { scroll-margin-top: 80px; content-visibility: auto; contain-intrinsic-size: auto 500px; }
 img { display: block; max-width: 100%; content-visibility: auto; }
@@ -215,7 +226,7 @@ img { display: block; max-width: 100%; content-visibility: auto; }
     opacity: .5;
 }
 .hero-metric b {
-    font-family: 'Unbounded', sans-serif;
+    font-family: var(--font-heading, 'Unbounded', sans-serif);
     font-size: 28px;
     color: var(--heading);
     display: block;
@@ -304,7 +315,7 @@ img { display: block; max-width: 100%; content-visibility: auto; }
     backdrop-filter: blur(10px);
 }
 .about-img-badge b {
-    font-family: 'Unbounded', sans-serif;
+    font-family: var(--font-heading, 'Unbounded', sans-serif);
     font-size: 24px;
     color: var(--accent);
     display: block;
@@ -372,7 +383,7 @@ img { display: block; max-width: 100%; content-visibility: auto; }
     color: var(--accent);
     font-weight: 700;
     font-size: 16px;
-    font-family: 'Unbounded', sans-serif;
+    font-family: var(--font-heading, 'Unbounded', sans-serif);
     white-space: nowrap;
 }
 .svc-expand {
@@ -481,7 +492,7 @@ img { display: block; max-width: 100%; content-visibility: auto; }
 .step-card:last-child { border-radius: 0 16px 16px 0; }
 .step-card:hover { background: var(--accent-bg); }
 .step-num {
-    font-family: 'Unbounded', sans-serif;
+    font-family: var(--font-heading, 'Unbounded', sans-serif);
     font-size: 36px;
     font-weight: 900;
     color: var(--accent);
@@ -621,6 +632,7 @@ img { display: block; max-width: 100%; content-visibility: auto; }
 .theme-btn.active { border-color: var(--accent); }
 .theme-btn[data-t="1"] { background: linear-gradient(135deg, #0a0a0a 50%, #a0e632 50%); }
 .theme-btn[data-t="2"] { background: linear-gradient(135deg, #0a0a0a 50%, #ffd600 50%); }
+.theme-btn[data-t="3"] { background: linear-gradient(135deg, #4a2f3a 50%, #f5e1e0 50%); }
 .calc { background: var(--bg); }
 .calc-wrap {
     max-width: 720px;
@@ -644,7 +656,7 @@ img { display: block; max-width: 100%; content-visibility: auto; }
     color: var(--heading);
 }
 .calc-label b {
-    font-family: 'Unbounded', sans-serif;
+    font-family: var(--font-heading, 'Unbounded', sans-serif);
     font-size: 18px;
     color: var(--accent);
 }
@@ -743,7 +755,7 @@ img { display: block; max-width: 100%; content-visibility: auto; }
     margin-bottom: 4px;
 }
 .calc-total {
-    font-family: 'Unbounded', sans-serif;
+    font-family: var(--font-heading, 'Unbounded', sans-serif);
     font-size: clamp(24px, 4vw, 32px);
     font-weight: 900;
     color: var(--accent);
@@ -1019,6 +1031,7 @@ body.menu-open { overflow: hidden; }
 <div class="theme-sw">
     <button class="theme-btn active" data-t="1" onclick="setTheme('1')"></button>
     <button class="theme-btn" data-t="2" onclick="setTheme('2')"></button>
+    <button class="theme-btn" data-t="3" onclick="setTheme('3')"></button>
 </div>
 <footer class="ftr"><div class="ftr-in"><span>&copy; <script>document.write(new Date().getFullYear())</script> ДунаевСтрой</span><a href="tel:+79999999999">+7 999 999-99-99</a></div></footer>
 <div class="flt">
@@ -1037,7 +1050,7 @@ function setTheme(t) {
     document.querySelectorAll('.theme-btn').forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-t') === t); });
     try { localStorage.setItem('ds-theme', t); } catch(e) {}
 }
-(function() { try { var s = localStorage.getItem('ds-theme'); if (s && ['1','2'].indexOf(s) !== -1) setTheme(s); } catch(e) {} })();
+(function() { try { var s = localStorage.getItem('ds-theme'); if (s && ['1','2','3'].indexOf(s) !== -1) setTheme(s); } catch(e) {} })();
 var svcs = [
     { t: 'Общестроительные работы', d: 'Демонтаж, черновая отделка, перегородки', p: 'от 2 500 \u20bd/м\u00b2', tags: ['Демонтаж', 'Стяжка', 'Гидроизоляция', 'Перегородки'] },
     { t: 'Отделочные работы', d: 'Шпаклёвка, покраска, обои, декор', p: 'от 3 000 \u20bd/м\u00b2', tags: ['Шпаклёвка', 'Покраска', 'Обои', 'Декоративная штукатурка'] },
