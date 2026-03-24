@@ -31,13 +31,13 @@
     --card-bg: rgba(255,214,0,.04); --card-solid: #141414;
 }
 [data-theme="3"] {
-    --bg: #4a2f3a; --bg2: #3d2632; --bg3: #553542; --bg4: #5e3c4c;
-    --border: rgba(245,225,224,.12); --border2: rgba(245,225,224,.2);
-    --text: #e8d5d4; --text2: #c4a8a6; --text3: #9a7b79;
+    --bg: #7f6169; --bg2: #74575f; --bg3: #8a6b73; --bg4: #95767e;
+    --border: rgba(245,225,224,.15); --border2: rgba(245,225,224,.25);
+    --text: #f0dedd; --text2: #dcc5c4; --text3: #b89a98;
     --heading: #fff; --accent: #f5e1e0; --accent2: #fff0ef; --accent3: #dcc5c4;
-    --accent-bg: rgba(245,225,224,.08); --accent-bg2: rgba(245,225,224,.14);
-    --accent-shadow: rgba(245,225,224,.15); --hdr-bg: rgba(74,47,58,.94);
-    --card-bg: rgba(245,225,224,.05); --card-solid: rgba(245,225,224,.1);
+    --accent-bg: rgba(245,225,224,.1); --accent-bg2: rgba(245,225,224,.16);
+    --accent-shadow: rgba(245,225,224,.15); --hdr-bg: rgba(127,97,105,.94);
+    --card-bg: rgba(245,225,224,.06); --card-solid: rgba(245,225,224,.12);
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
@@ -264,20 +264,7 @@ img { display: block; max-width: 100%; content-visibility: auto; }
 }
 .trust-item svg { color: var(--accent); opacity: .6; }
 .sec { padding: 80px 0; }
-.sec-a { background: var(--bg2); }
 .sec-bg { position: relative; }
-.sec-bg::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-size: cover;
-    background-position: center;
-    opacity: .06;
-    pointer-events: none;
-}
-#services.sec-bg::before { background-image: url('https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&q=60'); }
-#steps.sec-bg::before { background-image: url('https://images.unsplash.com/photo-1541123603104-512919d6a96c?w=1200&q=60'); }
-#contacts.sec-bg::before { background-image: url('https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1200&q=60'); }
 .sec-in { max-width: 1200px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
 .sec-h { margin-bottom: 48px; }
 .sec-h.center { text-align: center; }
@@ -815,6 +802,23 @@ body.menu-open { overflow: hidden; }
     .btn-main, .btn-sec { width: 100%; justify-content: center; text-align: center; min-height: 48px; }
     .btn-sub { min-height: 48px; }
 }
+.faq-list { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
+.faq-item { border: 1px solid var(--border2); border-radius: 14px; overflow: hidden; background: var(--card-solid); transition: border-color .3s; }
+.faq-item:hover { border-color: var(--accent); }
+.faq-q { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; cursor: pointer; gap: 16px; -webkit-tap-highlight-color: transparent; }
+.faq-q h4 { font-size: 16px; font-weight: 600; color: var(--heading); margin: 0; }
+.faq-q svg { flex-shrink: 0; color: var(--accent); transition: transform .3s; }
+.faq-item.open .faq-q svg { transform: rotate(45deg); }
+.faq-a { max-height: 0; overflow: hidden; transition: max-height .35s ease, padding .35s ease; }
+.faq-item.open .faq-a { max-height: 300px; }
+.faq-a p { padding: 0 22px 18px; color: var(--text2); font-size: 15px; line-height: 1.7; margin: 0; }
+.addr-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; max-width: 900px; margin: 0 auto; }
+.addr-img { border-radius: 16px; overflow: hidden; }
+.addr-img img { width: 100%; height: 100%; object-fit: cover; aspect-ratio: 4/3; }
+.addr-info { display: flex; flex-direction: column; gap: 12px; }
+.addr-info h3 { font-size: 22px; color: var(--heading); }
+.addr-info p { color: var(--text2); font-size: 15px; line-height: 1.7; }
+@media (max-width: 768px) { .addr-wrap { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -862,7 +866,6 @@ body.menu-open { overflow: hidden; }
     <div class="hero-bg"></div>
     <div class="hero-in">
         <div class="hero-content rv">
-            <div class="hero-tag">&#10003; Работаем по договору с гарантией</div>
             <h1>Ремонт квартир<br>и домов <span>под ключ</span></h1>
             <p class="hero-desc">Полный цикл ремонтных работ в Москве и МО — от дизайн-проекта до финальной уборки. Команда из 30+ специалистов.</p>
             <div class="hero-actions">
@@ -871,7 +874,7 @@ body.menu-open { overflow: hidden; }
             </div>
             <div class="hero-metrics">
                 <div class="hero-metric"><b>500+</b><span>объектов сдано</span></div>
-                <div class="hero-metric"><b>15 лет</b><span>на рынке</span></div>
+                <div class="hero-metric"><b>с 2014</b><span>на рынке</span></div>
                 <div class="hero-metric"><b>3 года</b><span>гарантия</span></div>
             </div>
         </div>
@@ -890,7 +893,7 @@ body.menu-open { overflow: hidden; }
         <div class="about-row">
             <div class="about-img rv">
                 <img src="https://images.unsplash.com/photo-1600607687644-c7171b42498f?w=700&q=80" alt="Интерьер" loading="lazy" decoding="async">
-                <div class="about-img-badge"><b>15+</b><span>лет опыта</span></div>
+                <div class="about-img-badge"><b>с 2014</b><span>на рынке</span></div>
             </div>
             <div class="rv">
                 <div class="sec-h">
@@ -987,7 +990,49 @@ body.menu-open { overflow: hidden; }
         </div>
     </div>
 </section>
-<section id="contacts" class="sec sec-a sec-bg">
+<section id="faq" class="sec">
+    <div class="sec-in">
+        <div class="sec-h center rv"><h2>Вопросы и <span>ответы</span></h2><p>Ответы на частые вопросы наших клиентов</p></div>
+        <div class="faq-list rv">
+            <div class="faq-item" onclick="this.classList.toggle('open')">
+                <div class="faq-q"><h4>Сколько стоит ремонт квартиры?</h4><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+                <div class="faq-a"><p>Стоимость зависит от площади, типа ремонта и объёма работ. Косметический ремонт — от 3 500 ₽/м², капитальный — от 6 000 ₽/м², под ключ — от 8 000 ₽/м². Точную стоимость рассчитаем после бесплатного замера.</p></div>
+            </div>
+            <div class="faq-item" onclick="this.classList.toggle('open')">
+                <div class="faq-q"><h4>Какие гарантии вы даёте?</h4><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+                <div class="faq-a"><p>Мы работаем по официальному договору и предоставляем гарантийный сертификат на 3 года. Все обязательства фиксируются документально.</p></div>
+            </div>
+            <div class="faq-item" onclick="this.classList.toggle('open')">
+                <div class="faq-q"><h4>Сколько времени занимает ремонт?</h4><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+                <div class="faq-a"><p>Сроки зависят от объёма работ: косметический ремонт однокомнатной квартиры — от 2 недель, капитальный — от 1,5 месяцев, ремонт под ключ — от 3 месяцев. Точные сроки фиксируем в договоре.</p></div>
+            </div>
+            <div class="faq-item" onclick="this.classList.toggle('open')">
+                <div class="faq-q"><h4>Вы закупаете материалы?</h4><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+                <div class="faq-a"><p>Да, у нас есть собственный отдел закупок. Мы работаем с проверенными поставщиками и закупаем материалы по оптовым ценам, что экономит ваш бюджет.</p></div>
+            </div>
+            <div class="faq-item" onclick="this.classList.toggle('open')">
+                <div class="faq-q"><h4>Как контролировать ход работ?</h4><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+                <div class="faq-a"><p>Мы отправляем ежедневные фотоотчёты о ходе работ. Также у вас будет личный прораб, с которым можно связаться в любое время.</p></div>
+            </div>
+        </div>
+    </div>
+</section>
+<section id="address" class="sec">
+    <div class="sec-in">
+        <div class="sec-h center rv"><h2>Наш <span>офис</span></h2></div>
+        <div class="addr-wrap rv">
+            <div class="addr-img">
+                <img src="" alt="Офис ДунаевСтрой" loading="lazy" decoding="async" id="addrImg">
+            </div>
+            <div class="addr-info">
+                <h3>Адрес</h3>
+                <p>Здесь будет адрес офиса</p>
+                <a href="#contacts" class="btn-main" style="width:fit-content">Связаться с нами &#8594;</a>
+            </div>
+        </div>
+    </div>
+</section>
+<section id="contacts" class="sec sec-bg">
     <div class="sec-in">
         <div class="sec-h center rv"><h2>Оставить <span>заявку</span></h2><p>Свяжемся в течение 15 минут</p></div>
         <div class="ct-layout">
