@@ -31,13 +31,14 @@
     --card-bg: rgba(255,214,0,.04); --card-solid: #141414;
 }
 [data-theme="3"] {
-    --bg: #7f6169; --bg2: #74575f; --bg3: #8a6b73; --bg4: #95767e;
-    --border: rgba(245,225,224,.15); --border2: rgba(245,225,224,.25);
-    --text: #f0dedd; --text2: #dcc5c4; --text3: #b89a98;
-    --heading: #fff; --accent: #f5e1e0; --accent2: #fff0ef; --accent3: #dcc5c4;
-    --accent-bg: rgba(245,225,224,.1); --accent-bg2: rgba(245,225,224,.16);
-    --accent-shadow: rgba(245,225,224,.15); --hdr-bg: rgba(127,97,105,.94);
-    --card-bg: rgba(245,225,224,.06); --card-solid: rgba(245,225,224,.12);
+    --bg: #9b8384; --bg2: #8f787a; --bg3: #a68e90; --bg4: #b09a9c;
+    --border: rgba(211,211,211,.2); --border2: rgba(211,211,211,.3);
+    --text: #f5f0f0; --text2: #e0d5d5; --text3: #c4b5b5;
+    --heading: #fff; --accent: #d3d3d3; --accent2: #e8e8e8; --accent3: #b8b8b8;
+    --accent-bg: rgba(211,211,211,.1); --accent-bg2: rgba(211,211,211,.16);
+    --accent-shadow: rgba(211,211,211,.15); --hdr-bg: rgba(155,131,132,.94);
+    --card-bg: rgba(211,211,211,.08); --card-solid: #d3d3d3;
+    --card-text: #3a2a2b; --card-text2: #5a4849;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
@@ -460,42 +461,29 @@ img { display: block; max-width: 100%; content-visibility: auto; }
     color: var(--accent);
     font-weight: 600;
 }
-.steps-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 2px;
-}
-.step-card {
-    padding: 32px 24px;
-    background: var(--card-solid);
-    border: 1px solid var(--border2);
-    text-align: center;
-    transition: all .3s;
-    position: relative;
-}
-.step-card:first-child { border-radius: 16px 0 0 16px; }
-.step-card:last-child { border-radius: 0 16px 16px 0; }
-.step-card:hover { background: var(--accent-bg); }
-.step-num {
-    font-family: 'Bodoni Moda', serif;
-    font-size: 36px;
-    font-weight: 900;
-    color: var(--accent);
-    opacity: .3;
-    line-height: 1;
-    margin-bottom: 12px;
-}
-.step-card h4 {
-    font-size: 15px;
-    color: var(--heading);
-    margin-bottom: 6px;
-    font-weight: 700;
-}
-.step-card p {
-    font-size: 13px;
-    color: var(--text3);
-    line-height: 1.5;
-}
+.steps-timeline { max-width: 640px; margin: 0 auto; position: relative; }
+.steps-timeline::before { content: ''; position: absolute; left: 28px; top: 0; bottom: 0; width: 2px; background: var(--border2); }
+.step-tl { display: flex; gap: 20px; padding: 0 0 32px; position: relative; }
+.step-tl:last-child { padding-bottom: 0; }
+.step-tl-icon { width: 56px; height: 56px; border-radius: 14px; background: var(--card-solid); border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 1; font-size: 24px; }
+.step-tl-body { padding-top: 6px; }
+.step-tl-body h4 { font-size: 17px; color: var(--heading); font-weight: 700; margin-bottom: 6px; }
+.step-tl-body p { font-size: 14px; color: var(--text2); line-height: 1.6; }
+.step-tl-cta { display: inline-block; margin-top: 10px; padding: 10px 24px; background: var(--accent); color: var(--bg); font-weight: 700; font-size: 14px; border-radius: 10px; transition: all .2s; }
+.step-tl-cta:hover { background: var(--accent3); }
+[data-theme="3"] .step-tl-icon { color: var(--card-text); }
+[data-theme="3"] .step-tl-body h4 { color: var(--heading); }
+[data-theme="3"] .ct-card, [data-theme="3"] .frm, [data-theme="3"] .faq-item, [data-theme="3"] .port-card { color: var(--card-text); }
+[data-theme="3"] .ct-card-lb, [data-theme="3"] .frm-f label { color: var(--card-text2); }
+[data-theme="3"] .ct-card-val, [data-theme="3"] .frm h3, [data-theme="3"] .port-card-body h4, [data-theme="3"] .faq-q h4 { color: var(--card-text); }
+[data-theme="3"] .faq-a p, [data-theme="3"] .port-card-body span { color: var(--card-text2); }
+[data-theme="3"] .ct-card-ic { background: rgba(155,131,132,.2); color: var(--card-text); }
+[data-theme="3"] .frm-f input, [data-theme="3"] .frm-f select { background: rgba(155,131,132,.15); border-color: rgba(155,131,132,.3); color: var(--card-text); }
+[data-theme="3"] .svc-row { color: var(--card-text); }
+[data-theme="3"] .svc-row h3 { color: var(--card-text); }
+[data-theme="3"] .svc-row .svc-desc { color: var(--card-text2); }
+[data-theme="3"] .svc-row .svc-price { color: var(--card-text); }
+[data-theme="3"] .faq-q svg { color: var(--card-text2); }
 .ct-layout {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -768,11 +756,7 @@ img { display: block; max-width: 100%; content-visibility: auto; }
 .fab-p { background: var(--accent); color: var(--bg); box-shadow: 0 4px 16px var(--accent-shadow); }
 @media (max-width: 900px) {
     .about-row, .ct-layout { grid-template-columns: 1fr; }
-    .steps-grid { grid-template-columns: 1fr 1fr; }
-    .step-card:first-child { border-radius: 16px 0 0 0; }
-    .step-card:nth-child(2) { border-radius: 0 16px 0 0; }
-    .step-card:nth-child(3) { border-radius: 0 0 0 16px; }
-    .step-card:last-child { border-radius: 0 0 16px 0; }
+    .steps-timeline { padding-left: 0; }
     .svc-row { grid-template-columns: 1fr auto; }
     .svc-row .svc-desc { display: none; }
 }
@@ -790,8 +774,7 @@ body.menu-open { overflow: hidden; }
     .hero h1 { font-size: 30px; }
     .hero-desc { font-size: 16px; }
     .hero-metrics { flex-direction: column; gap: 16px; }
-    .steps-grid { grid-template-columns: 1fr; }
-    .step-card, .step-card:first-child, .step-card:last-child, .step-card:nth-child(2), .step-card:nth-child(3) { border-radius: 14px; }
+    .step-tl-icon { width: 44px; height: 44px; font-size: 20px; }
     .port-card { flex: 0 0 280px; }
     .topbar-right a { font-size: 12px; padding: 4px 10px; }
     .ct-card-val { font-size: 16px; }
@@ -862,6 +845,31 @@ body.menu-open { overflow: hidden; }
         </div>
     </div>
 </header>
+<section id="about" class="sec" style="padding-top:40px">
+    <div class="sec-in">
+        <div class="about-row">
+            <div class="about-img rv">
+                <img src="https://images.unsplash.com/photo-1600607687644-c7171b42498f?w=700&q=80" alt="Интерьер" loading="lazy" decoding="async">
+                <div class="about-img-badge"><b>с 2014</b><span>на рынке</span></div>
+            </div>
+            <div class="rv">
+                <div class="sec-h">
+                    <h2>О <span>компании</span></h2>
+                </div>
+                <div class="about-text">
+                    <p>Наша компания специализируется на полном цикле ремонтных работ для квартир, домов и коммерческих помещений в Москве и Московской области.</p>
+                    <p>У нас есть команда опытных специалистов: дизайнеры, закупщики, прорабы, мастера, руководители участков и инженеры. Мы работаем вместе, чтобы каждый проект был удобным и результативным для вас.</p>
+                </div>
+                <ul class="about-checklist">
+                    <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Собственный штат мастеров</li>
+                    <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Прозрачная смета без скрытых платежей</li>
+                    <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Закупка материалов по оптовым ценам</li>
+                    <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Фотоотчёт каждый день</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
 <section class="hero">
     <div class="hero-bg"></div>
     <div class="hero-in">
@@ -888,31 +896,6 @@ body.menu-open { overflow: hidden; }
         <div class="trust-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> 98% довольных клиентов</div>
     </div>
 </div>
-<section id="about" class="sec">
-    <div class="sec-in">
-        <div class="about-row">
-            <div class="about-img rv">
-                <img src="https://images.unsplash.com/photo-1600607687644-c7171b42498f?w=700&q=80" alt="Интерьер" loading="lazy" decoding="async">
-                <div class="about-img-badge"><b>с 2014</b><span>на рынке</span></div>
-            </div>
-            <div class="rv">
-                <div class="sec-h">
-                    <h2>О <span>компании</span></h2>
-                </div>
-                <div class="about-text">
-                    <p>Наша компания специализируется на полном цикле ремонтных работ для квартир, домов и коммерческих помещений в Москве и Московской области.</p>
-                    <p>У нас есть команда опытных специалистов: дизайнеры, закупщики, прорабы, мастера, руководители участков и инженеры. Мы работаем вместе, чтобы каждый проект был удобным и результативным для вас.</p>
-                </div>
-                <ul class="about-checklist">
-                    <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Собственный штат мастеров</li>
-                    <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Прозрачная смета без скрытых платежей</li>
-                    <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Закупка материалов по оптовым ценам</li>
-                    <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Фотоотчёт каждый день</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</section>
 <section id="services" class="sec sec-a sec-bg">
     <div class="sec-in">
         <div class="sec-h center rv"><h2>Наши <span>услуги</span></h2><p>Нажмите на услугу для подробностей</p></div>
@@ -962,30 +945,52 @@ body.menu-open { overflow: hidden; }
     </div>
     <div class="port-scroll" id="portScroll"></div>
 </section>
-<section id="steps" class="sec sec-a sec-bg">
+<section id="steps" class="sec">
     <div class="sec-in">
-        <div class="sec-h center rv"><h2>Как мы <span>работаем</span></h2><p>4 простых шага к вашему идеальному ремонту</p></div>
-        <div class="steps-grid rv">
-            <div class="step-card"><div class="step-num">01</div><h4>Замер</h4><p>Бесплатный выезд, обмер помещения, обсуждение пожеланий</p></div>
-            <div class="step-card"><div class="step-num">02</div><h4>Смета</h4><p>Детальный расчёт стоимости, фиксация в договоре</p></div>
-            <div class="step-card"><div class="step-num">03</div><h4>Ремонт</h4><p>Выполнение работ, ежедневные фотоотчёты</p></div>
-            <div class="step-card"><div class="step-num">04</div><h4>Сдача</h4><p>Приёмка, уборка, гарантийный сертификат на 3 года</p></div>
-        </div>
-    </div>
-</section>
-<section class="sec">
-    <div class="sec-in">
-        <div class="avito-banner rv">
-            <div class="avito-banner-img">
-                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&q=80" alt="Интерьер" loading="lazy" decoding="async">
+        <div class="sec-h center rv"><h2>Как мы <span>работаем</span></h2></div>
+        <div class="steps-timeline rv">
+            <div class="step-tl">
+                <div class="step-tl-icon">&#128197;</div>
+                <div class="step-tl-body">
+                    <h4>Назначаем удобное время для встречи</h4>
+                    <p>Согласовываем бесплатный визит инженера для тщательного анализа предстоящей работы.</p>
+                    <a href="#contacts" class="step-tl-cta">Записаться на встречу</a>
+                </div>
             </div>
-            <div class="avito-banner-body">
-                <h3>Мы также<br>на Авито</h3>
-                <p>Посмотрите наши объявления, отзывы и актуальные цены на услуги</p>
-                <a href="https://www.avito.ru/" target="_blank" rel="noopener noreferrer" class="avito-btn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                    Перейти на Авито
-                </a>
+            <div class="step-tl">
+                <div class="step-tl-icon">&#128119;</div>
+                <div class="step-tl-body">
+                    <h4>Отправляем инженера к месту работ</h4>
+                    <p>Выезд специалиста, проведение замеров, постановка задач, необходимые консультации.</p>
+                </div>
+            </div>
+            <div class="step-tl">
+                <div class="step-tl-icon">&#128203;</div>
+                <div class="step-tl-body">
+                    <h4>Составление сметы</h4>
+                    <p>Детальный расчёт стоимости ремонта, обсуждение и согласование всех пожеланий.</p>
+                </div>
+            </div>
+            <div class="step-tl">
+                <div class="step-tl-icon">&#128230;</div>
+                <div class="step-tl-body">
+                    <h4>Закупка материалов</h4>
+                    <p>Закупаем и доставляем все необходимые строительные и отделочные материалы согласно смете.</p>
+                </div>
+            </div>
+            <div class="step-tl">
+                <div class="step-tl-icon">&#128296;</div>
+                <div class="step-tl-body">
+                    <h4>Ремонт</h4>
+                    <p>Начинаем ремонт в назначенный день. Строго соблюдаем график и держим вас в курсе каждого этапа работ.</p>
+                </div>
+            </div>
+            <div class="step-tl">
+                <div class="step-tl-icon">&#10003;</div>
+                <div class="step-tl-body">
+                    <h4>Предоставляем результат</h4>
+                    <p>Ремонт выполнен качественно и в установленный срок!</p>
+                </div>
             </div>
         </div>
     </div>
