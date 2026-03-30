@@ -75,9 +75,10 @@ img { display: block; max-width: 100%; content-visibility: auto; }
 .hdr-left { display: flex; align-items: center; gap: 16px; }
 .hdr-right { display: flex; align-items: center; gap: 16px; }
 .logo { display: flex; align-items: center; gap: 0; }
-.logo { flex-direction: column; gap: 0; }
-.logo-t { color: var(--accent); font-weight: 700; font-size: 26px; letter-spacing: 1px; line-height: 1; }
-.logo-sub { font-size: 10px; color: var(--text2); letter-spacing: 2px; text-transform: uppercase; font-weight: 500; }
+.logo { flex-direction: row; gap: 12px; align-items: center; }
+.logo-t { color: var(--accent); font-weight: 900; font-size: 26px; letter-spacing: 2px; line-height: 1; text-transform: uppercase; }
+.logo-sep { width: 2px; height: 32px; background: var(--accent); opacity: .4; }
+.logo-sub { font-size: 11px; color: var(--text2); letter-spacing: 1px; text-transform: lowercase; font-weight: 500; line-height: 1.3; }
 .burger { display: flex; flex-direction: column; gap: 5px; width: 44px; height: 44px; cursor: pointer; z-index: 55; justify-content: center; align-items: center; -webkit-tap-highlight-color: transparent; }
 .burger span { display: block; width: 24px; height: 2.5px; background: var(--accent); border-radius: 2px; transition: all .3s; }
 .burger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
@@ -843,7 +844,7 @@ body.menu-open { overflow: hidden; }
     <div class="hdr-in">
         <div class="hdr-left">
             <div class="burger" id="burger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
-            <a href="#" class="logo"><span class="logo-t">ДунаевСтрой</span><span class="logo-sub">Строительная компания</span></a>
+            <a href="#" class="logo"><span class="logo-t">ДунаевСтрой</span><span class="logo-sep"></span><span class="logo-sub">строительная<br>компания</span></a>
         </div>
         <div class="hdr-right">
             <nav class="nav">
@@ -870,8 +871,10 @@ body.menu-open { overflow: hidden; }
                     <h2>О <span>компании</span></h2>
                 </div>
                 <div class="about-text">
-                    <p>Наша компания специализируется на полном цикле ремонтных работ для квартир, домов и коммерческих помещений в Москве и Московской области.</p>
-                    <p>У нас есть команда опытных специалистов: дизайнеры, закупщики, прорабы, мастера, руководители участков и инженеры. Мы работаем вместе, чтобы каждый проект был удобным и результативным для вас.</p>
+                    <p>Ваш идеальный дом начинается здесь. Добро пожаловать в наш мир ремонтов — место, где каждый проект становится образом идеального пространства.</p>
+                    <p>Мы работаем по Москве и Московской области и предлагаем комплексные решения: от концепции дизайна до полного выполнения отделочных и инженерных работ.</p>
+                    <p>В нашей работе главное — безупречное качество, точное соблюдение сроков и прозрачность на каждом этапе. Мы гарантируем высокий стандарт материалов и исполнения, внимательное отношение к деталям и индивидуальный подход к каждому клиенту.</p>
+                    <p>Ваш дом — наша ответственность: мы реализуем идеи с идеальной точностью и дарим комфорт, уют и стиль каждому помещению.</p>
                 </div>
                 <ul class="about-checklist">
                     <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Собственный штат мастеров</li>
