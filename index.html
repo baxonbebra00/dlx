@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;500;600;700;800;900&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="preload" as="image" href="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1600&q=80">
     <style>
-:root, [data-theme="1"] {
+[data-theme="1"] {
     --bg: #0a0a0a; --bg2: #111; --bg3: #161616; --bg4: #1c1c1c;
     --border: rgba(160,230,130,.1); --border2: rgba(160,230,130,.2);
     --text: #ccc; --text2: #888; --text3: #555;
@@ -30,7 +30,7 @@
     --accent-shadow: rgba(255,214,0,.2); --hdr-bg: rgba(10,10,10,.92);
     --card-bg: rgba(255,214,0,.04); --card-solid: #141414;
 }
-[data-theme="3"] {
+:root, [data-theme="3"] {
     --bg: #3a2a2b; --bg2: #2f2122; --bg3: #45333a; --bg4: #503c42;
     --border: rgba(211,211,211,.12); --border2: rgba(211,211,211,.2);
     --text: #e8d5d4; --text2: #c4a8a6; --text3: #9a7b79;
@@ -1092,11 +1092,6 @@ body.menu-open { overflow: hidden; }
         </div>
     </div>
 </section>
-<div class="theme-sw">
-    <button class="theme-btn active" data-t="1" onclick="setTheme('1')"></button>
-    <button class="theme-btn" data-t="2" onclick="setTheme('2')"></button>
-    <button class="theme-btn" data-t="3" onclick="setTheme('3')"></button>
-</div>
 <footer class="ftr"><div class="ftr-in"><span>&copy; <script>document.write(new Date().getFullYear())</script> ДунаевСтрой</span><a href="tel:+79999999999">+7 999 999-99-99</a></div></footer>
 <div class="flt">
     <a href="https://t.me/+79999999999" target="_blank" class="fab fab-t"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></a>
