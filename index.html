@@ -31,13 +31,13 @@
     --card-bg: rgba(255,214,0,.04); --card-solid: #141414;
 }
 [data-theme="3"] {
-    --bg: #9b8384; --bg2: #8f787a; --bg3: #a68e90; --bg4: #b09a9c;
-    --border: rgba(211,211,211,.2); --border2: rgba(211,211,211,.3);
-    --text: #f5f0f0; --text2: #e0d5d5; --text3: #c4b5b5;
+    --bg: #3a2a2b; --bg2: #2f2122; --bg3: #45333a; --bg4: #503c42;
+    --border: rgba(211,211,211,.12); --border2: rgba(211,211,211,.2);
+    --text: #e8d5d4; --text2: #c4a8a6; --text3: #9a7b79;
     --heading: #fff; --accent: #d3d3d3; --accent2: #e8e8e8; --accent3: #b8b8b8;
-    --accent-bg: rgba(211,211,211,.1); --accent-bg2: rgba(211,211,211,.16);
-    --accent-shadow: rgba(211,211,211,.15); --hdr-bg: rgba(155,131,132,.94);
-    --card-bg: rgba(211,211,211,.08); --card-solid: #d3d3d3;
+    --accent-bg: rgba(211,211,211,.08); --accent-bg2: rgba(211,211,211,.14);
+    --accent-shadow: rgba(211,211,211,.15); --hdr-bg: rgba(58,42,43,.94);
+    --card-bg: rgba(211,211,211,.06); --card-solid: #d3d3d3;
     --card-text: #3a2a2b; --card-text2: #5a4849;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -75,7 +75,9 @@ img { display: block; max-width: 100%; content-visibility: auto; }
 .hdr-left { display: flex; align-items: center; gap: 16px; }
 .hdr-right { display: flex; align-items: center; gap: 16px; }
 .logo { display: flex; align-items: center; gap: 0; }
-.logo-t { color: var(--accent); font-weight: 700; font-size: 26px; letter-spacing: 1px; }
+.logo { flex-direction: column; gap: 0; }
+.logo-t { color: var(--accent); font-weight: 700; font-size: 26px; letter-spacing: 1px; line-height: 1; }
+.logo-sub { font-size: 10px; color: var(--text2); letter-spacing: 2px; text-transform: uppercase; font-weight: 500; }
 .burger { display: flex; flex-direction: column; gap: 5px; width: 44px; height: 44px; cursor: pointer; z-index: 55; justify-content: center; align-items: center; -webkit-tap-highlight-color: transparent; }
 .burger span { display: block; width: 24px; height: 2.5px; background: var(--accent); border-radius: 2px; transition: all .3s; }
 .burger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
@@ -825,7 +827,6 @@ body.menu-open { overflow: hidden; }
             <a href="tel:+79999999999">&#128222; +7 999 999-99-99</a>
             <a href="https://t.me/+79999999999" target="_blank">&#9992;&#65039; Telegram</a>
             <a href="https://wa.me/79999999999" target="_blank">&#128172; WhatsApp</a>
-            <a href="https://www.avito.ru/" target="_blank">&#127968; Авито</a>
         </div>
     </div>
 </div>
@@ -842,7 +843,7 @@ body.menu-open { overflow: hidden; }
     <div class="hdr-in">
         <div class="hdr-left">
             <div class="burger" id="burger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
-            <a href="#" class="logo"><span class="logo-t">ДунаевСтрой</span></a>
+            <a href="#" class="logo"><span class="logo-t">ДунаевСтрой</span><span class="logo-sub">Строительная компания</span></a>
         </div>
         <div class="hdr-right">
             <nav class="nav">
@@ -886,8 +887,8 @@ body.menu-open { overflow: hidden; }
     <div class="hero-bg"></div>
     <div class="hero-in">
         <div class="hero-content rv">
-            <h1>Ремонт квартир<br>и домов <span>под ключ</span></h1>
-            <p class="hero-desc">Полный цикл ремонтных работ в Москве и МО — от дизайн-проекта до финальной уборки. Команда из 30+ специалистов.</p>
+            <h1>Ваш идеальный дом<br><span>начинается здесь</span></h1>
+            <p class="hero-desc">Добро пожаловать в наш мир ремонтов — место, где каждый проект становится образом идеального пространства. Мы работаем по Москве и МО и предлагаем комплексные решения: от концепции дизайна до полного выполнения отделочных и инженерных работ.</p>
             <div class="hero-actions">
                 <a href="#contacts" class="btn-main">Бесплатный расчёт &#8594;</a>
                 <a href="#portfolio" class="btn-sec">Смотреть проекты</a>
