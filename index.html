@@ -70,7 +70,7 @@ img { display: block; max-width: 100%; content-visibility: auto; }
 .topbar-right { display: flex; gap: 0; align-items: center; }
 .topbar-right a { color: var(--accent); font-weight: 600; transition: color .2s; padding: 6px 16px; border-radius: 6px; display: flex; align-items: center; gap: 6px; }
 .topbar-right a:hover { color: var(--accent2); background: var(--accent-bg); }
-.hdr { position: sticky; top: 0; z-index: 40; background: var(--hdr-bg); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); }
+.hdr { position: sticky; top: 0; z-index: 40; background: var(--hdr-bg); backdrop-filter: blur(16px); }
 .hdr-in { max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; }
 .hdr-left { display: flex; align-items: center; gap: 16px; }
 .hdr-right { display: flex; align-items: center; gap: 16px; }
@@ -361,15 +361,15 @@ img { display: block; max-width: 100%; content-visibility: auto; }
 .svc-row h3 {
     font-size: 17px;
     font-weight: 700;
-    color: var(--heading);
+    color: var(--card-text, var(--heading));
     font-family: 'Montserrat', sans-serif;
 }
 .svc-row .svc-desc {
-    color: var(--text2);
+    color: var(--card-text2, var(--text2));
     font-size: 14px;
 }
 .svc-row .svc-price {
-    color: var(--accent);
+    color: var(--card-text, var(--accent));
     font-weight: 700;
     font-size: 16px;
     font-family: 'Bodoni Moda', serif;
