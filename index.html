@@ -32,12 +32,12 @@
 }
 :root, [data-theme="3"] {
     --bg: #3a2a2b; --bg2: #2f2122; --bg3: #45333a; --bg4: #503c42;
-    --border: rgba(211,211,211,.12); --border2: rgba(211,211,211,.2);
-    --text: #e8d5d4; --text2: #c4a8a6; --text3: #9a7b79;
-    --heading: #fff; --accent: #d3d3d3; --accent2: #e8e8e8; --accent3: #b8b8b8;
-    --accent-bg: rgba(211,211,211,.08); --accent-bg2: rgba(211,211,211,.14);
-    --accent-shadow: rgba(211,211,211,.15); --hdr-bg: rgba(58,42,43,.94);
-    --card-bg: rgba(211,211,211,.06); --card-solid: #d3d3d3;
+    --border: rgba(245,225,224,.15); --border2: rgba(245,225,224,.25);
+    --text: #f0dedd; --text2: #dcc5c4; --text3: #b89a98;
+    --heading: #f5e1e0; --accent: #f5e1e0; --accent2: #fff0ef; --accent3: #dcc5c4;
+    --accent-bg: rgba(245,225,224,.1); --accent-bg2: rgba(245,225,224,.16);
+    --accent-shadow: rgba(245,225,224,.15); --hdr-bg: rgba(58,42,43,.94);
+    --card-bg: rgba(245,225,224,.06); --card-solid: #d3d3d3;
     --card-text: #3a2a2b; --card-text2: #5a4849;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -817,23 +817,29 @@ body.menu-open { overflow: hidden; }
 .addr-info h3 { font-size: 22px; color: var(--heading); }
 .addr-info p { color: var(--text2); font-size: 15px; line-height: 1.7; }
 @media (max-width: 768px) { .addr-wrap { grid-template-columns: 1fr; } }
+.reviews-scroll { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 0 24px 16px; -webkit-overflow-scrolling: touch; }
+.reviews-scroll::-webkit-scrollbar { display: none; }
+.review-card { flex: 0 0 320px; scroll-snap-align: start; background: var(--card-solid); border-radius: 16px; padding: 24px; border: 1px solid var(--border2); }
+.review-card .review-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.review-card .review-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--accent3); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: var(--card-text); }
+.review-card .review-name { font-weight: 700; font-size: 15px; color: var(--card-text); }
+.review-card .review-date { font-size: 12px; color: var(--card-text2); }
+.review-card .review-stars { color: #f4a836; font-size: 14px; margin-bottom: 8px; }
+.review-card .review-text { font-size: 14px; line-height: 1.6; color: var(--card-text2); }
+@media (max-width: 640px) { .review-card { flex: 0 0 280px; } }
     </style>
 </head>
 <body>
 <div class="topbar">
     <div class="topbar-in">
-        <div class="topbar-left">&#9200; Ежедневно 8:00–21:00 &bull; Москва и МО</div>
-        <span class="topbar-sep">|</span>
         <div class="topbar-right">
-            <a href="tel:+79999999999">&#128222; +7 999 999-99-99</a>
-            <a href="https://t.me/+79999999999" target="_blank">&#9992;&#65039; Telegram</a>
-            <a href="https://wa.me/79999999999" target="_blank">&#128172; WhatsApp</a>
+            <a href="tel:+79999999999" style="font-weight:800;font-size:15px">&#128222; +7 999 999-99-99</a>
+            <a href="mailto:Dunaev-Stroy@mail.ru">&#9993; Dunaev-Stroy@mail.ru</a>
         </div>
     </div>
 </div>
 <div class="mob-overlay" id="mobOv" onclick="toggleMenu()"></div>
 <nav class="mob-menu" id="mobMenu">
-    <a href="#about" onclick="toggleMenu()">О компании</a>
     <a href="#services" onclick="toggleMenu()">Услуги</a>
     <a href="#portfolio" onclick="toggleMenu()">Проекты</a>
     <a href="#calc" onclick="toggleMenu()">Калькулятор</a>
@@ -848,7 +854,6 @@ body.menu-open { overflow: hidden; }
         </div>
         <div class="hdr-right">
             <nav class="nav">
-                <a href="#about">О нас</a>
                 <a href="#services">Услуги</a>
                 <a href="#portfolio">Проекты</a>
                 <a href="#calc">Калькулятор</a>
@@ -859,39 +864,20 @@ body.menu-open { overflow: hidden; }
         </div>
     </div>
 </header>
-<section id="about" class="sec" style="padding-top:40px">
-    <div class="sec-in">
-        <div class="about-row">
-            <div class="about-img rv">
-                <img src="https://images.unsplash.com/photo-1600607687644-c7171b42498f?w=700&q=80" alt="Интерьер" loading="lazy" decoding="async">
-                <div class="about-img-badge"><b>с 2014</b><span>на рынке</span></div>
-            </div>
-            <div class="rv">
-                <div class="sec-h">
-                    <h2>О <span>компании</span></h2>
-                </div>
-                <div class="about-text">
-                    <p>Ваш идеальный дом начинается здесь. Добро пожаловать в наш мир ремонтов — место, где каждый проект становится образом идеального пространства.</p>
-                    <p>Мы работаем по Москве и Московской области и предлагаем комплексные решения: от концепции дизайна до полного выполнения отделочных и инженерных работ.</p>
-                    <p>В нашей работе главное — безупречное качество, точное соблюдение сроков и прозрачность на каждом этапе. Мы гарантируем высокий стандарт материалов и исполнения, внимательное отношение к деталям и индивидуальный подход к каждому клиенту.</p>
-                    <p>Ваш дом — наша ответственность: мы реализуем идеи с идеальной точностью и дарим комфорт, уют и стиль каждому помещению.</p>
-                </div>
-                <ul class="about-checklist">
-                    <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Собственный штат мастеров</li>
-                    <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Прозрачная смета без скрытых платежей</li>
-                    <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Закупка материалов по оптовым ценам</li>
-                    <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Фотоотчёт каждый день</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</section>
 <section class="hero">
     <div class="hero-bg"></div>
     <div class="hero-in">
         <div class="hero-content rv">
             <h1>Ваш идеальный дом<br><span>начинается здесь</span></h1>
-            <p class="hero-desc">Добро пожаловать в наш мир ремонтов — место, где каждый проект становится образом идеального пространства. Мы работаем по Москве и МО и предлагаем комплексные решения: от концепции дизайна до полного выполнения отделочных и инженерных работ.</p>
+            <p class="hero-desc">Добро пожаловать в наш мир ремонтов — место, где каждый проект становится образом идеального пространства. Мы работаем по Москве и Московской области и предлагаем комплексные решения: от концепции дизайна до полного выполнения отделочных и инженерных работ.</p>
+            <p class="hero-desc">В нашей работе главное — безупречное качество, точное соблюдение сроков и прозрачность на каждом этапе. Мы гарантируем высокий стандарт материалов и исполнения, внимательное отношение к деталям и индивидуальный подход к каждому клиенту.</p>
+            <p class="hero-desc">Ваш дом — наша ответственность: мы реализуем идеи с идеальной точностью и дарим комфорт, уют и стиль каждому помещению.</p>
+            <ul class="about-checklist" style="margin-bottom:32px">
+                <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Собственный штат мастеров</li>
+                <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Прозрачная смета без скрытых платежей</li>
+                <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Закупка материалов по оптовым ценам</li>
+                <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Фотоотчёт каждый день</li>
+            </ul>
             <div class="hero-actions">
                 <a href="#contacts" class="btn-main">Бесплатный расчёт &#8594;</a>
                 <a href="#portfolio" class="btn-sec">Смотреть проекты</a>
@@ -904,18 +890,23 @@ body.menu-open { overflow: hidden; }
         </div>
     </div>
 </section>
-<div class="trust-bar">
-    <div class="trust-items">
-        <div class="trust-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Гарантия 3 года</div>
-        <div class="trust-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Работа по договору</div>
-        <div class="trust-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.59 11.59l-9.18-9.18a2 2 0 0 0-2.82 0L2.41 9.59a2 2 0 0 0 0 2.82l9.18 9.18a2 2 0 0 0 2.82 0l7.18-7.18a2 2 0 0 0 0-2.82z"/></svg> Бесплатный замер</div>
-        <div class="trust-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> 98% довольных клиентов</div>
-    </div>
-</div>
 <section id="services" class="sec sec-a sec-bg">
     <div class="sec-in">
         <div class="sec-h center rv"><h2>Наши <span>услуги</span></h2><p>Нажмите на услугу для подробностей</p></div>
         <div class="svc-list" id="svcList"></div>
+    </div>
+</section>
+<section id="steps" class="sec">
+    <div class="sec-in">
+        <div class="sec-h center rv"><h2>Как мы <span>работаем</span></h2></div>
+        <div class="steps-timeline rv">
+            <div class="step-tl"><div class="step-tl-icon">&#128197;</div><div class="step-tl-body"><h4>Назначаем удобное время для встречи</h4><p>Согласовываем бесплатный визит инженера для тщательного анализа предстоящей работы.</p><a href="#contacts" class="step-tl-cta">Записаться на встречу</a></div></div>
+            <div class="step-tl"><div class="step-tl-icon">&#128119;</div><div class="step-tl-body"><h4>Отправляем инженера к месту работ</h4><p>Выезд специалиста, проведение замеров, постановка задач, необходимые консультации.</p></div></div>
+            <div class="step-tl"><div class="step-tl-icon">&#128203;</div><div class="step-tl-body"><h4>Составление сметы</h4><p>Детальный расчёт стоимости ремонта, обсуждение и согласование всех пожеланий.</p></div></div>
+            <div class="step-tl"><div class="step-tl-icon">&#128230;</div><div class="step-tl-body"><h4>Закупка материалов</h4><p>Закупаем и доставляем все необходимые строительные и отделочные материалы согласно смете.</p></div></div>
+            <div class="step-tl"><div class="step-tl-icon">&#128296;</div><div class="step-tl-body"><h4>Ремонт</h4><p>Начинаем ремонт в назначенный день. Строго соблюдаем график и держим вас в курсе каждого этапа работ.</p></div></div>
+            <div class="step-tl"><div class="step-tl-icon">&#10003;</div><div class="step-tl-body"><h4>Предоставляем результат</h4><p>Ремонт выполнен качественно и в установленный срок!</p></div></div>
+        </div>
     </div>
 </section>
 <section id="calc" class="sec calc">
@@ -961,54 +952,21 @@ body.menu-open { overflow: hidden; }
     </div>
     <div class="port-scroll" id="portScroll"></div>
 </section>
-<section id="steps" class="sec">
+<section id="reviews" class="sec">
     <div class="sec-in">
-        <div class="sec-h center rv"><h2>Как мы <span>работаем</span></h2></div>
-        <div class="steps-timeline rv">
-            <div class="step-tl">
-                <div class="step-tl-icon">&#128197;</div>
-                <div class="step-tl-body">
-                    <h4>Назначаем удобное время для встречи</h4>
-                    <p>Согласовываем бесплатный визит инженера для тщательного анализа предстоящей работы.</p>
-                    <a href="#contacts" class="step-tl-cta">Записаться на встречу</a>
-                </div>
-            </div>
-            <div class="step-tl">
-                <div class="step-tl-icon">&#128119;</div>
-                <div class="step-tl-body">
-                    <h4>Отправляем инженера к месту работ</h4>
-                    <p>Выезд специалиста, проведение замеров, постановка задач, необходимые консультации.</p>
-                </div>
-            </div>
-            <div class="step-tl">
-                <div class="step-tl-icon">&#128203;</div>
-                <div class="step-tl-body">
-                    <h4>Составление сметы</h4>
-                    <p>Детальный расчёт стоимости ремонта, обсуждение и согласование всех пожеланий.</p>
-                </div>
-            </div>
-            <div class="step-tl">
-                <div class="step-tl-icon">&#128230;</div>
-                <div class="step-tl-body">
-                    <h4>Закупка материалов</h4>
-                    <p>Закупаем и доставляем все необходимые строительные и отделочные материалы согласно смете.</p>
-                </div>
-            </div>
-            <div class="step-tl">
-                <div class="step-tl-icon">&#128296;</div>
-                <div class="step-tl-body">
-                    <h4>Ремонт</h4>
-                    <p>Начинаем ремонт в назначенный день. Строго соблюдаем график и держим вас в курсе каждого этапа работ.</p>
-                </div>
-            </div>
-            <div class="step-tl">
-                <div class="step-tl-icon">&#10003;</div>
-                <div class="step-tl-body">
-                    <h4>Предоставляем результат</h4>
-                    <p>Ремонт выполнен качественно и в установленный срок!</p>
-                </div>
-            </div>
-        </div>
+        <div class="sec-h center rv"><h2>Отзывы <span>клиентов</span></h2><p>Что говорят о нас наши заказчики</p></div>
+    </div>
+    <div class="reviews-scroll">
+        <div class="review-card rv"><div class="review-head"><div class="review-avatar">А</div><div><div class="review-name">Алексей К.</div><div class="review-date">Март 2026</div></div></div><div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="review-text">Делали капитальный ремонт двушки. Ребята работали чётко по графику, каждый день присылали фото. Результат превзошёл ожидания. Рекомендую!</div></div>
+        <div class="review-card rv"><div class="review-head"><div class="review-avatar">М</div><div><div class="review-name">Марина С.</div><div class="review-date">Февраль 2026</div></div></div><div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="review-text">Заказывала дизайн-проект и ремонт под ключ. Очень довольна качеством материалов и работой мастеров. Всё сделали аккуратно и в срок.</div></div>
+        <div class="review-card rv"><div class="review-head"><div class="review-avatar">Д</div><div><div class="review-name">Дмитрий В.</div><div class="review-date">Январь 2026</div></div></div><div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="review-text">Ремонтировали кухню и санузел. Прораб всегда на связи, все вопросы решались оперативно. Смета не изменилась ни на рубль. Спасибо!</div></div>
+        <div class="review-card rv"><div class="review-head"><div class="review-avatar">Е</div><div><div class="review-name">Елена П.</div><div class="review-date">Декабрь 2025</div></div></div><div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="review-text">Второй раз обращаемся в ДунаевСтрой. Сначала делали квартиру, теперь дом. Профессионалы своего дела, всё по договору с гарантией.</div></div>
+        <div class="review-card rv"><div class="review-head"><div class="review-avatar">И</div><div><div class="review-name">Игорь Н.</div><div class="review-date">Ноябрь 2025</div></div></div><div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9734;</div><div class="review-text">В целом отличная работа. Немного затянули с поставкой плитки, но результат стоит того. Квартира выглядит как с обложки журнала.</div></div>
+        <div class="review-card rv"><div class="review-head"><div class="review-avatar">О</div><div><div class="review-name">Ольга Т.</div><div class="review-date">Октябрь 2025</div></div></div><div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="review-text">Косметический ремонт однушки за 3 недели. Быстро, чисто, качественно. Соседи уже спрашивают контакты. Однозначно рекомендую!</div></div>
+        <div class="review-card rv"><div class="review-head"><div class="review-avatar">С</div><div><div class="review-name">Сергей Л.</div><div class="review-date">Сентябрь 2025</div></div></div><div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="review-text">Полная переделка трёхкомнатной квартиры. Инженерные системы, отделка, мебель — всё под ключ. Живём уже полгода, никаких нареканий.</div></div>
+        <div class="review-card rv"><div class="review-head"><div class="review-avatar">Н</div><div><div class="review-name">Наталья Р.</div><div class="review-date">Август 2025</div></div></div><div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="review-text">Делали ремонт в новостройке. Команда помогла с планировкой, подобрали материалы. Результат — просто мечта. Спасибо огромное!</div></div>
+        <div class="review-card rv"><div class="review-head"><div class="review-avatar">А</div><div><div class="review-name">Андрей Ф.</div><div class="review-date">Июль 2025</div></div></div><div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="review-text">Ремонт загородного дома 150 м². Кровля, фасад, внутренняя отделка. Всё выполнено на высшем уровне. Бригада работает слаженно.</div></div>
+        <div class="review-card rv"><div class="review-head"><div class="review-avatar">Т</div><div><div class="review-name">Татьяна М.</div><div class="review-date">Июнь 2025</div></div></div><div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="review-text">Обратились по рекомендации знакомых и не пожалели. Ремонт ванной и кухни — всё идеально. Мастера вежливые, работают без перекуров.</div></div>
     </div>
 </section>
 <section id="faq" class="sec">
