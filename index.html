@@ -763,8 +763,16 @@ img { display: block; max-width: 100%; content-visibility: auto; }
 @media (max-width: 900px) {
     .about-row, .ct-layout { grid-template-columns: 1fr; }
     .steps-timeline { padding-left: 0; }
-    .svc-row { grid-template-columns: 1fr auto; }
+    .svc-row { grid-template-columns: 1fr auto; gap: 12px; padding: 18px 18px; }
     .svc-row .svc-desc { display: none; }
+    .svc-row h3 { font-size: 16px; }
+    .svc-row .svc-price { font-size: 15px; }
+}
+@media (max-width: 480px) {
+    .sec-in { padding: 0 14px; }
+    .svc-row { gap: 8px; padding: 16px 14px; }
+    .svc-row h3 { font-size: 15px; }
+    .svc-row .svc-price { font-size: 14px; }
 }
 @media (max-width: 768px) {
     .nav { display: none; }
